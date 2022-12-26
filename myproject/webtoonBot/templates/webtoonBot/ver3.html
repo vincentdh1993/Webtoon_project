@@ -14,8 +14,23 @@
         }
         input[id="user_webtoon_list"] {
         position: relative;
-        top: 1.5px;
+        top: 3.7px;
         list-style-type: none;
+        }
+
+        ul {
+    list-style:none;
+    margin:0;
+    padding:0;
+    display:inline-block;
+}
+
+        li{
+        margin-left:15px;
+        display:inline-block;
+        list-style:none;
+        float: left;
+        margin-right: 15px;
         }
 
         label[for="user_webtoon_list"]{ display:inline-block;
@@ -50,8 +65,8 @@
         {% csrf_token %}
         <ul name="testing">
             {% for tmp in webtoon_list %}
-                <input style="zoom:2.0" align="center" type="checkbox" id="user_webtoon_list" name="user_webtoon_list" value="{{tmp}}">
-                <label for="user_webtoon_list"> {{tmp}}</label><br>
+            <li><input style="zoom:2.0" align="center" type="checkbox" id="user_webtoon_list" name="user_webtoon_list" value="{{tmp}}"> {{tmp}}</li>
+<!--                <li for="user_webtoon_list"> {{tmp}}</li><br>-->
             {% endfor %}
         </ul>
         <input align="center" class="btn btn-success" type="submit" value="Pick!" align="center">
