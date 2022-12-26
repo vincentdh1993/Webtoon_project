@@ -19,11 +19,11 @@
         }
 
         ul {
-    list-style:none;
-    margin:0;
-    padding:0;
-    display:inline-block;
-}
+            list-style:none;
+            margin:0;
+            padding:0;
+            display:inline-block;
+        }
 
         li{
         margin-left:15px;
@@ -65,7 +65,9 @@
         {% csrf_token %}
         <ul name="testing">
             {% for tmp in webtoon_list %}
-            <li><input style="zoom:2.0" align="center" type="checkbox" id="user_webtoon_list" name="user_webtoon_list" value="{{tmp}}"> {{tmp}}</li>
+            <li><input style="zoom:2.0" align="center" type="checkbox" id="user_webtoon_list" name="user_webtoon_list" value="{{tmp}}"> <img src= "{% static 'thumbnails/'|add:tmp|add:'.jpg' %}"> {{tmp}}</li>
+
+
 <!--                <li for="user_webtoon_list"> {{tmp}}</li><br>-->
             {% endfor %}
         </ul>

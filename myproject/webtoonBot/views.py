@@ -4,7 +4,7 @@ import math
 import numpy as np
 import scipy.sparse as sp
 import pandas as pd
-from tqdm import tqdm
+# from tqdm import tqdm
 from collections import defaultdict
 import os
 
@@ -349,7 +349,7 @@ def EASE_get_recomendation(new_user_name,new_item_list,EASE_config):
   X = make_matrix_data_set.make_sparse_matrix()
   model = EASE(X = X, reg = 680)
   model.fit()
-  ndcg, hit = evaluate(model = model, X = X.todense(), user_train = user_train, user_valid = user_valid,user_list = user_valid)
+  # ndcg, hit = evaluate(model = model, X = X.todense(), user_train = user_train, user_valid = user_valid,user_list = user_valid)
   # print(f'NDCG@10: {ndcg:.5f}| HIT@10: {hit:.5f}')
   make_matrix_data_set = MakeMatrixDataSet(config = EASE_config,df=result_df)
   X_test = make_matrix_data_set.make_sparse_matrix(test = True)
@@ -421,8 +421,10 @@ def index(request):
     return render(request, 'webtoonBot/index.html')
 
 def ver3(request):
-    webtoon_list = pd.read_csv("user_rating_10.csv", encoding="euc-kr")
-    webtoon_list = list(webtoon_list['title'].unique())
+    og_list = pd.read_csv("user_rating_10.csv", encoding="euc-kr")
+    webtoon_list = list(og_list['title'].unique())
+    thumbnail_list = list(og_list['thumbnail'].unique())
+
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print(device)
     model3 = torch.load("recVae_model_test.pt",map_location=torch.device('cpu'))
@@ -446,7 +448,7 @@ def ver3(request):
         return render(request, 'webtoonBot/ver3_result.html',
                       {'final_list': final_list})
     else:
-        return render(request, 'webtoonBot/ver3.html', {'webtoon_list': webtoon_list})
+        return render(request, 'webtoonBot/ver3.html', {'webtoon_list': webtoon_list,'thumbnail_list':thumbnail_list})
 
 def ver1(request):
     return render(request, 'webtoonBot/ver1.html')
