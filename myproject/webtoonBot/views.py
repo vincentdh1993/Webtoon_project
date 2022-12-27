@@ -213,11 +213,17 @@ def recvae_predict(model, data_loader, user_train, user_valid, make_matrix_data_
 
 
 def getConfig(new_item_list):
+  valid_samples=0
+
+  if len(new_item_list) == 1:
+    valid_samples = len(new_item_list)//2
+  else:
+    valid_samples=2
 
   recvae_config = {
       'batch_size' : 500, #
       'num_workers' : 2, #
-      'valid_samples' : len(new_item_list)//2,  #
+      'valid_samples' : valid_samples,  #
       'seed' : 22, #
   }
 
@@ -227,7 +233,7 @@ def getConfig(new_item_list):
 
   EASE_config = {
       'candidate_item_num' : 3,
-      'valid_samples' : len(new_item_list)//2, # 검증에 사용할 sample 수
+      'valid_samples' : valid_samples, # 검증에 사용할 sample 수
       'seed' : 22,
       'reg' : 750,
   }
