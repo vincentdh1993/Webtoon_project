@@ -460,7 +460,7 @@ def ver4(request):
     og_list = pd.read_csv("user_rating_10.csv", encoding="euc-kr")
     webtoon_list = list(og_list['title'].unique())
     thumbnail_list = list(og_list['thumbnail'].unique())
-    actual_url = pd.read_csv("actual_NW_url_with_thumbnails_ansi.csv",encoding="euc-kr")
+    actual_url_df = pd.read_csv("actual_NW_url_with_thumbnails_ansi.csv",encoding="euc-kr")
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print(device)
@@ -480,6 +480,11 @@ def ver4(request):
         recvae_list = RecVae_get_recomendation(new_user_name, new_item_list, recvae_config, model3)
         ease_list = EASE_get_recomendation(new_user_name, new_item_list, EASE_config)
         final_list = getFinalList(recvae_list, ease_list)
+        actual_url=[]
+        for i in final_list:
+            url = actual_url_df.loc[actual_url_df['title'] == i, 'url']
+            url = url.values[0]
+            actual_url.append(url)
 
 
         return render(request, 'webtoonBot/ver4_result.html',
