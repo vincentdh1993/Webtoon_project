@@ -165,20 +165,20 @@ li{
 <div class="cont-bg">
   <div class="cont-title"></div>
     <div class="cont-main">
-        {% for tmp in final_list %}
+        {% for item,url in combined_list %}
           <div class="cont-checkbox">
             <li>
-            <a href="https://www.google.com" name="user_webtoon_list" type="image" id="{% static 'myCheckbox-'|add:tmp %}" value="{{tmp}}"/>
-              <label for="{% static 'myCheckbox-'|add:tmp %}">
+            <a href="{{url}}" name="user_webtoon_list" type="image" id="{{item}}" value="{{item}}"/>
+              <label for="{{item}}">
                 <img
-                  src="{% static 'thumbnails/'|add:tmp|add:'.jpg' %}"
+                  src="{% static 'thumbnails/'|add:item|add:'.jpg' %}"
                 />
                 <span class="cover-checkbox">
                   <svg viewBox="0 0 12 10">
                     <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
                   </svg>
                 </span>
-                <div class="info">{{tmp}}</div>
+                <div class="info">{{item}}</div>
               </label>
             </li>
           </div>

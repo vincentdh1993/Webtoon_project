@@ -481,14 +481,17 @@ def ver4(request):
         ease_list = EASE_get_recomendation(new_user_name, new_item_list, EASE_config)
         final_list = getFinalList(recvae_list, ease_list)
         actual_url=[]
+        combined_list = []
         for i in final_list:
             url = actual_url_df.loc[actual_url_df['title'] == i, 'url']
             url = url.values[0]
             actual_url.append(url)
+            combined_list.append([i,url])
+
 
 
         return render(request, 'webtoonBot/ver4_result.html',
-                      {'final_list': final_list,'new_item_list':new_item_list,'actual_url':actual_url})
+                      {'final_list': final_list,'new_item_list':new_item_list,'actual_url':actual_url,'combined_list':combined_list})
     else:
         return render(request, 'webtoonBot/ver4.html', {'webtoon_list': webtoon_list,'thumbnail_list':thumbnail_list})
 
