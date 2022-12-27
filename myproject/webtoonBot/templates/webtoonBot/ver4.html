@@ -162,12 +162,15 @@ li{
 <div><img src= "{% static 'img/naver_webtoon_white.jpg' %}"</div>
     <h2> 🤖네이버 웹툰 추천 봇🤖 </h2>
 
+<form method="POST">
+  {% csrf_token %}
+<div>
+  <input align="center" class="btn btn-success" type="submit" value="Pick!" align="center">
+</div>
 
 <div class="cont-bg">
-  <div class="cont-title">Checkbox</div>
-  <form method="POST">
+  <div class="cont-title"></div>
     <div class="cont-main">
-        {% csrf_token %}
         {% for tmp in webtoon_list %}
           <div class="cont-checkbox">
             <li>

@@ -482,7 +482,7 @@ def ver4(request):
 
 
         return render(request, 'webtoonBot/ver4_result.html',
-                      {'final_list': final_list})
+                      {'final_list': final_list,'new_item_list':new_item_list})
     else:
         return render(request, 'webtoonBot/ver4.html', {'webtoon_list': webtoon_list,'thumbnail_list':thumbnail_list})
 
