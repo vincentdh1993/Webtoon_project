@@ -460,6 +460,7 @@ def ver4(request):
     og_list = pd.read_csv("user_rating_10.csv", encoding="euc-kr")
     webtoon_list = list(og_list['title'].unique())
     thumbnail_list = list(og_list['thumbnail'].unique())
+    actual_url = pd.read_csv("actual_NW_url_with_thumbnails_ansi.csv",encoding="euc-kr")
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print(device)
@@ -482,7 +483,7 @@ def ver4(request):
 
 
         return render(request, 'webtoonBot/ver4_result.html',
-                      {'final_list': final_list,'new_item_list':new_item_list})
+                      {'final_list': final_list,'new_item_list':new_item_list,'actual_url':actual_url})
     else:
         return render(request, 'webtoonBot/ver4.html', {'webtoon_list': webtoon_list,'thumbnail_list':thumbnail_list})
 
