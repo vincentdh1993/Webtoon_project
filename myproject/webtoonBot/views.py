@@ -456,12 +456,11 @@ def ver3(request):
     else:
         return render(request, 'webtoonBot/ver3.html', {'webtoon_list': webtoon_list,'thumbnail_list':thumbnail_list})
 
-def ver4(request):
+def ver4 (request):
     og_list = pd.read_csv("user_rating_10.csv", encoding="euc-kr")
     webtoon_list = list(og_list['title'].unique())
     thumbnail_list = list(og_list['thumbnail'].unique())
     actual_url_df = pd.read_csv("actual_NW_url_with_thumbnails_ansi.csv",encoding="euc-kr")
-
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print(device)
     model3 = torch.load("recVae_model_test.pt",map_location=torch.device('cpu'))
@@ -484,6 +483,7 @@ def ver4(request):
         combined_list = []
         for i in final_list:
             url = actual_url_df.loc[actual_url_df['title'] == i, 'url']
+            thumb = og_list.loc[og_list['title']==i,'thumbnail']
             url = url.values[0]
             actual_url.append(url)
             combined_list.append([i,url])

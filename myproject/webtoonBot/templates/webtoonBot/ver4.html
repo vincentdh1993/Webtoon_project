@@ -44,7 +44,7 @@
 
 .cont-checkbox {
   width: 150px;
-  height: 100px;
+  height: 150px;
   border-radius: var(--border-radius);
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
   background: white;
@@ -141,9 +141,11 @@ label .cover-checkbox svg {
 
 label .info {
   text-align: center;
+  padding: 0px 0;
+  align-items: center;
   margin-top: 1rem;
   font-weight: 600;
-  font-size: 0.8rem;
+  font-size: 1.2rem;
 }
 
 div{
@@ -159,13 +161,13 @@ li{
     <title>웹툰 추천 봇</title>
 </head>
 
-<div><img src= "{% static 'img/naver_webtoon_white.jpg' %}"</div>
+<div><img src= "{% static 'img/NW_white.jpg' %}"</div>
     <h2> 🤖네이버 웹툰 추천 봇🤖 </h2>
 
 <form method="POST">
   {% csrf_token %}
 <div>
-  <input align="center" class="btn btn-success" type="submit" value="Pick!" align="center">
+  <input align="center" class="btn btn-success" type="submit" value="완료!" align="center">
 </div>
 
 <div class="cont-bg">
@@ -191,7 +193,7 @@ li{
           {% endfor %}
     </div>
     <div>
-      <input align="center" class="btn btn-success" type="submit" value="Pick!" align="center">
+      <input align="center" class="btn btn-success" type="submit" value="추천!" align="center">
     </div>
     <br><br><br>
   </form>
