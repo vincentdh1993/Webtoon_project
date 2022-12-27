@@ -1,0 +1,191 @@
+{% load static %}
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap-theme.min.css" integrity="sha384-6pzBo3FDv/PJ8r2KRkGHifhEocL+1X2rVCTTkUfGk7/0pbek5mMa1upzvWbrUbOZ" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
+<style>
+  * {
+  font-family: Lato;
+  margin: 0;
+  padding: 0;
+  --transition: 0.15s;
+  --border-radius: 0.5rem;
+  --background: #00C73C;
+  --box-shadow: #00C73C;
+}
+
+.cont-bg {
+  min-height: 10vh;
+  background-image: radial-gradient(
+    circle farthest-corner at 7.2% 13.6%,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.cont-title {
+  color: white;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.cont-main {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+}
+
+.cont-checkbox {
+  width: 150px;
+  height: 100px;
+  border-radius: var(--border-radius);
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  background: white;
+  transition: transform var(--transition);
+}
+
+.cont-checkbox:first-of-type {
+  margin-bottom: 0.75rem;
+  margin-right: 0.75rem;
+}
+
+.cont-checkbox:active {
+  transform: scale(0.9);
+}
+
+input {
+  display: none;
+}
+
+input:checked + label {
+  opacity: 1;
+  box-shadow: 0 0 0 3px var(--background);
+}
+
+input:checked + label img {
+  -webkit-filter: none; /* Safari 6.0 - 9.0 */
+  filter: none;
+}
+
+input:checked + label .cover-checkbox {
+  opacity: 1;
+  transform: scale(1);
+}
+
+input:checked + label .cover-checkbox svg {
+  stroke-dashoffset: 0;
+}
+
+label {
+  display: inline-block;
+  cursor: pointer;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  opacity: 0.8;
+}
+
+label img {
+  width: 100%;
+  height: 70%;
+  object-fit: cover;
+  clip-path: polygon(0% 0%, 100% 0, 100% 100%, 50% 100%, 0 100%);
+  -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
+  filter: grayscale(0%);
+}
+
+label .cover-checkbox {
+  position: absolute;
+  right: 5px;
+  top: 3px;
+  z-index: 1;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--box-shadow);
+  border: 2px solid #fff;
+  transition: transform var(--transition),
+    opacity calc(var(--transition) * 1.2) linear;
+  opacity: 0;
+  transform: scale(0);
+}
+
+label .cover-checkbox svg {
+  width: 13px;
+  height: 11px;
+  display: inline-block;
+  vertical-align: top;
+  fill: none;
+  margin: 2px 10px 0 3px;
+  stroke: #fff;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 16px;
+  transition: stroke-dashoffset 0.4s ease var(--transition);
+  stroke-dashoffset: 16px;
+}
+
+label .info {
+  text-align: center;
+  margin-top: 1rem;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+div{
+            text-align: center;
+        }
+li{
+  list-style:none;
+}
+
+</style>
+
+<meta charset="UTF-8">
+    <title>웹툰 추천 봇</title>
+</head>
+
+<div><img src= "{% static 'img/naver_webtoon_whitee.jpg' %}"</div>
+    <h2> 🤖🤖 </h2>
+
+
+<div class="cont-bg">
+  <div class="cont-title">Checkbox</div>
+  <form method="POST">
+    <div class="cont-main">
+        {% csrf_token %}
+        {% for tmp in webtoon_list %}
+          <div class="cont-checkbox">
+            <li>
+            <input name="user_webtoon_list" type="checkbox" id="{% static 'myCheckbox-'|add:tmp %}" value="{{tmp}}"/>
+              <label for="{% static 'myCheckbox-'|add:tmp %}">
+                <img
+                  src="{% static 'thumbnails/'|add:tmp|add:'.jpg' %}"
+                />
+                <span class="cover-checkbox">
+                  <svg viewBox="0 0 12 10">
+                    <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+                  </svg>
+                </span>
+                <div class="info">{{tmp}}</div>
+              </label>
+            </li>
+          </div>
+          {% endfor %}
+    </div>
+    <div>
+      <input align="center" class="btn btn-success" type="submit" value="Pick!" align="center">
+    </div>
+    <br><br><br>
+  </form>
+</div>

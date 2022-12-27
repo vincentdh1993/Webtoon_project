@@ -450,6 +450,36 @@ def ver3(request):
     else:
         return render(request, 'webtoonBot/ver3.html', {'webtoon_list': webtoon_list,'thumbnail_list':thumbnail_list})
 
+def ver4(request):
+    og_list = pd.read_csv("user_rating_10.csv", encoding="euc-kr")
+    webtoon_list = list(og_list['title'].unique())
+    thumbnail_list = list(og_list['thumbnail'].unique())
+
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    print(device)
+    model3 = torch.load("recVae_model_test.pt",map_location=torch.device('cpu'))
+    item_encoder = getCoder("item_encoder")
+    item_decoder = getCoder("item_decoder")
+    user_encoder = getCoder("user_encoder")
+    user_decoder = getCoder("user_decoder")
+
+    new_item_list = []
+    if request.method == 'POST':
+        new_item_list = request.POST.getlist('user_webtoon_list')
+        new_user_name = "vincenzodh"
+        print(new_item_list,"$")
+
+        recvae_config, EASE_config = getConfig(new_item_list)
+        recvae_list = RecVae_get_recomendation(new_user_name, new_item_list, recvae_config, model3)
+        ease_list = EASE_get_recomendation(new_user_name, new_item_list, EASE_config)
+        final_list = getFinalList(recvae_list, ease_list)
+
+
+        return render(request, 'webtoonBot/ver4_result.html',
+                      {'final_list': final_list})
+    else:
+        return render(request, 'webtoonBot/ver4.html', {'webtoon_list': webtoon_list,'thumbnail_list':thumbnail_list})
+
 def ver1(request):
     return render(request, 'webtoonBot/ver1.html')
 
