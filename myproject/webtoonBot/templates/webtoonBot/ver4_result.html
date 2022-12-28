@@ -46,12 +46,14 @@
   width: 150px;
   height: 100px;
   border-radius: var(--border-radius);
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  /* box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); */
+  box-shadow: 0px 0px 0px 2.5px #00c73c;
   background: white;
   transition: transform var(--transition);
   margin-top: 5px;
   margin-right: 5px;
   margin-left: 5px;
+  margin-bottom: 5px;
 }
 
 .cont-checkbox:first-of-type {
@@ -158,8 +160,9 @@ li{
 <meta charset="UTF-8">
     <title>웹툰 추천 봇</title>
 </head>
-<div></div>
-    <h2 style="text-align: center;"> 🤖네이버 웹툰 추천 결과🤖 </h2>
+<div><img src= "{% static 'img/naver_webtoon_white.jpg' %}"</div>
+    <h2> 🤖네이버 웹툰 추천 봇🤖 </h2>
+<!--    <h2 style="text-align: center;"> 🤖네이버 웹툰 추천 결과🤖 </h2>-->
 <form method="POST">
   {% csrf_token %}
 <div class="cont-bg">
