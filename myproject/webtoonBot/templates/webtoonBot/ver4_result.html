@@ -165,13 +165,13 @@ li{
 <div class="cont-bg">
   <div class="cont-title"></div>
     <div class="cont-main">
-        {% for item,url in combined_list %}
+        {% for item,url,thumb in combined_list %}
           <div class="cont-checkbox">
             <li>
-            <a href="{{url}}" target="_blank" name="user_webtoon_list" type="image" id="{{item}}" value="{{item}}"/>
+            <a href="{{url}}" target="_blank" name="user_webtoon_list" type="image" id="{{item}}" value="{{test}}"/>
               <label for="{{item}}">
                 <img
-                  src="{% static 'thumbnails/'|add:item|add:'.jpg' %}"
+                  src="{% static 'thumbnails/'|add:thumb|add:'.jpg' %}"
                 />
                 <span class="cover-checkbox">
                   <svg viewBox="0 0 12 10">

@@ -487,17 +487,18 @@ def ver4 (request):
         final_list = getFinalList(recvae_list, ease_list)
         actual_url=[]
         combined_list = []
+        thumb_names = [sub.replace('?', '') for sub in final_list]
+        thumb_names = [sub.replace(':', '') for sub in thumb_names]
         for i in final_list:
             url = actual_url_df.loc[actual_url_df['title'] == i, 'url']
             thumb = og_list.loc[og_list['title']==i,'thumbnail']
             url = url.values[0]
             actual_url.append(url)
-            combined_list.append([i,url])
-
-
+            # combined_list.append([i,url,i])
+        combined_list = list(zip(final_list,actual_url,thumb_names))
 
         return render(request, 'webtoonBot/ver4_result.html',
-                      {'final_list': final_list,'new_item_list':new_item_list,'actual_url':actual_url,'combined_list':combined_list})
+                      {'final_list': final_list,'new_item_list':new_item_list,'combined_list':combined_list})
     else:
         return render(request, 'webtoonBot/ver4.html', {'webtoon_list': webtoon_list,'thumbnail_list':thumbnail_list})
 
