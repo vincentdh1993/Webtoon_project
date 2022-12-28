@@ -173,13 +173,13 @@ li{
 <div class="cont-bg">
   <div class="cont-title"></div>
     <div class="cont-main">
-        {% for tmp in webtoon_list %}
+        {% for tmp,val in webtoon_list %}
           <div class="cont-checkbox">
             <li>
             <input name="user_webtoon_list" type="checkbox" id="{% static 'myCheckbox-'|add:tmp %}" value="{{tmp}}"/>
               <label for="{% static 'myCheckbox-'|add:tmp %}">
                 <img
-                  src="{% static 'thumbnails/'|add:tmp|add:'.jpg' %}"
+                  src="{% static 'thumbnails/'|add:val|add:'.jpg' %}"
                 />
                 <span class="cover-checkbox">
                   <svg viewBox="0 0 12 10">

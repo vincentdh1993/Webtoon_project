@@ -464,6 +464,12 @@ def ver4 (request):
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print(device)
     model3 = torch.load("recVae_model_test.pt",map_location=torch.device('cpu'))
+
+    thumb_names = [sub.replace('?', '') for sub in webtoon_list]
+    thumb_names = [sub.replace(':', '') for sub in thumb_names]
+    webtoon_list = [list(a) for a in zip(webtoon_list, thumb_names)]
+
+
     item_encoder = getCoder("item_encoder")
     item_decoder = getCoder("item_decoder")
     user_encoder = getCoder("user_encoder")
