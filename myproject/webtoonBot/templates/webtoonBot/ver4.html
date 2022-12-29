@@ -34,6 +34,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  filter: blur(0px);
+  pointer-events:all;
 }
 
 .cont-title {
@@ -190,7 +192,7 @@ li{
   background-color: #00c73c;
   color: white;
   cursor: pointer;
-  padding: 1px;
+  padding: 2.5px;
   border-radius: 400px;
 }
 
@@ -209,21 +211,28 @@ li{
 }
 
 
+
 </style>
     <script>
     function foo() {
        alert("Submit button clicked!");
        return true;
     }
+
     function showDiv() {
       document.getElementById('Login').style.display = "none";
       document.getElementById('loadingGif').style.display = "none";
       document.getElementById('submit').src = "{% static 'img/load.gif' %}";
+      document.getElementById('cont-bg').style.filter = "blur(2px)";
+      document.getElementById('cont-bg').style.pointerEvents = "none";
+
 
       setTimeout(function() {
         document.getElementById('loadingGif').style.display = "none";
         document.getElementById('showme').style.display = "block";
       },70000);
+
+
     }
 
 
@@ -275,7 +284,7 @@ li{
   <input align="center" class="btn btn-success" name="submit" id="submit" type="image" src="{% static 'img/naver_webtoon.jpg' %}" height="80" width="80" value="추천 받기!" align="center" onclick="showDiv()">
 </div>
 
-<div class="cont-bg">
+<div class="cont-bg" id="cont-bg">
   <div class="cont-title"></div>
     <div class="cont-main">
         {% for tmp,val in webtoon_list %}
