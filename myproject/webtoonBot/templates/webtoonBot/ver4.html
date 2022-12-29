@@ -158,6 +158,21 @@ li{
   list-style:none;
 }
 
+button {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 10px;
+  z-index: 99;
+  font-size: 18px;
+  border: none;
+  outline: none;
+  background-color: 00c73c;
+  color: white;
+  cursor: pointer;
+  padding: 15px;
+  border-radius: 4px;
+}
 
 
 </style>
@@ -165,7 +180,7 @@ li{
     function foo() {
        alert("Submit button clicked!");
        return true;
-}
+    }
     function showDiv() {
       document.getElementById('Login').style.display = "none";
       document.getElementById('loadingGif').style.display = "block";
@@ -173,7 +188,23 @@ li{
         document.getElementById('loadingGif').style.display = "none";
         document.getElementById('showme').style.display = "block";
       },70000);
-}
+    }
+
+    let mybutton = document.getElementById("myBtn");
+    window.onscroll = function() {scrollFunction()};
+
+    function scrollFunction() {
+      if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+        document.getElementById("myBtn").style.display = "block";
+      } else {
+        document.getElementById("myBtn").style.display = "none";
+      }
+    }
+
+    function topFunction() {
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+    }
 
 </script>
 
@@ -181,6 +212,11 @@ li{
 <meta charset="UTF-8">
     <title>웹툰 추천 봇</title>
 </head>
+
+<body>
+
+<button onclick="topFunction()" name="myBtn" id="myBtn" title="Go to top">Top</button>
+
 
 <div><img src= "{% static 'img/naver_webtoon_white.jpg' %}"</div>
     <h2> 🤖네이버 웹툰 추천 봇🤖 </h2>
@@ -196,7 +232,7 @@ li{
 <form method="POST" id="myform">
   {% csrf_token %}
 <div>
-  <input align="center" class="btn btn-success" id="submit" type="submit" value="완료!" align="center" onclick="showDiv()">
+  <input align="center" class="btn btn-success" id="submit" type="submit" value="추천 받기!" align="center" onclick="showDiv()">
 </div>
 
 <div class="cont-bg">
@@ -227,3 +263,4 @@ li{
     <br><br><br>
   </form>
 </div>
+</body>
