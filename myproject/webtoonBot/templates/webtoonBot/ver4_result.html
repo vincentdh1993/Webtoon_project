@@ -162,7 +162,8 @@ li{
     <title>웹툰 추천 봇</title>
 </head>
 <div><img src= "{% static 'img/naver_webtoon_white.jpg' %}"</div>
-    <h2> 🤖네이버 웹툰 추천 봇🤖 </h2>
+    <h2> 🤖네이버 웹툰 추천 결과🤖 </h2>
+    <h4>총 {{combined_list|length}}개의 웹툰이 추천되었습니다 :)</h4>
 <!--    <h2 style="text-align: center;"> 🤖네이버 웹툰 추천 결과🤖 </h2>-->
 <form method="POST">
   {% csrf_token %}
