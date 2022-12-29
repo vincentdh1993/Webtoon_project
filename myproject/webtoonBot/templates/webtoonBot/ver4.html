@@ -11,7 +11,7 @@
 <!--    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-<style>
+    <style>
   * {
   font-family: Lato;
   margin: 0;
@@ -172,14 +172,14 @@ li{
   font-size: 15px;
   border: none;
   outline: none;
-  background-color: 00c73c;
+  background-color: #00c73c;
   color: white;
   cursor: pointer;
   padding: 15px;
   border-radius: 40px;
 }
 
-#submit {
+.btn-success {
   position: fixed;
   top: 230px;
   right: 10px;
@@ -187,40 +187,45 @@ li{
   font-size: 15px;
   border: none;
   outline: none;
-  background-color: 00c73c;
+  background-color: #00c73c;
   color: white;
   cursor: pointer;
-  padding: 15px;
+  padding: 1px;
   border-radius: 400px;
-<!--  background:url('https://media.tenor.com/HT-Xm8vgUysAAAAC/load.gif');-->
 }
 
-#submit:hover {
-  background-color: #616e65;
-}
 
 #myBtn:hover {
-  background-color: #616e65;
+  background-color: #07a336;
 }
 
-.btn-success{
-    background-color: #00c73c !important;
+.btn-success:active{
+    transform: scale(0.9) !important;
+    outline-color:red !important;
 }
+
+.btn-success:focus{
+    outline-color:#00c73c !important;
+}
+
 
 </style>
-<script>
+    <script>
     function foo() {
        alert("Submit button clicked!");
        return true;
     }
     function showDiv() {
       document.getElementById('Login').style.display = "none";
-      document.getElementById('loadingGif').style.display = "block";
+      document.getElementById('loadingGif').style.display = "none";
+      document.getElementById('submit').src = "{% static 'img/load.gif' %}";
+
       setTimeout(function() {
         document.getElementById('loadingGif').style.display = "none";
         document.getElementById('showme').style.display = "block";
       },70000);
     }
+
 
     let mybutton = document.getElementById("myBtn");
     window.onscroll = function() {scrollFunction()};
@@ -266,7 +271,8 @@ li{
 <form method="POST" id="myform">
   {% csrf_token %}
 <div>
-  <input align="center" class="btn btn-success" name="submit" id="submit" type="submit" value="추천 받기!" align="center" onclick="showDiv()">
+<!--  <input align="center" class="btn btn-success" name="submit" id="submit" type="submit" value="추천 받기!" align="center" onclick="showDiv()">-->
+  <input align="center" class="btn btn-success" name="submit" id="submit" type="image" src="{% static 'img/naver_webtoon.jpg' %}" height="80" width="80" value="추천 받기!" align="center" onclick="showDiv()">
 </div>
 
 <div class="cont-bg">
@@ -291,9 +297,6 @@ li{
           </div>
           {% endfor %}
     </div>
-<!--    <div>-->
-<!--      <input align="center" class="btn btn-success" type="submit" value="추천!" align="center">-->
-<!--    </div>-->
     <br><br><br>
   </form>
 </div>
