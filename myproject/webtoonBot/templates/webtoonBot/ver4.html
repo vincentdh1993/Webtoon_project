@@ -215,6 +215,12 @@ li{
     display: block !important;
 }
 
+#user_name{
+    display: block !important;
+}
+
+
+
 </style>
     <script>
     function foo() {
@@ -268,8 +274,14 @@ li{
 <button onclick="topFunction()" name="myBtn" id="myBtn" title="Go to top">Top</button>
 
 <div><img src= "{% static 'img/naver_webtoon_white.jpg' %}"</div>
-    <h2> 🤖네이버 웹툰 추천 봇🤖 </h2>
-    <h4>즐겨보았던 웹툰들을 선택하고 우측 초록버튼을 클릭하세요 :)</h4>
+    <h2> 🤖네이버 웹툰 추천 봇 사용법🤖 </h2>
+
+<div id="instruction">
+    <h4>1. 아이디를 입력한다.</h4>
+    <h4>2. 즐겨보았던 웹툰들을 선택한다.</h4>
+    <h4>3. 우측에 엄지 버튼을 클릭하여 추천 결과를 받는다.</h4>
+<!--    <h4>즐겨보았던 웹툰들을 선택하고 우측 초록버튼을 클릭하세요 :)</h4>-->
+</div>
 
 <div id="showme" style="display:none;">You are signed in now.</div>
 
@@ -292,7 +304,12 @@ li{
 
 
 <div class="cont-bg" id="cont-bg">
-  <div class="cont-title"></div>
+
+  <label for="user_name">당신의 아이디를 입력해주세요:</label>
+  <input type="text" id="user_name" name="user_name"><br><br>
+
+
+    <div class="cont-title"></div>
     <div class="cont-main">
         {% for tmp,val in webtoon_list %}
           <div class="cont-checkbox">

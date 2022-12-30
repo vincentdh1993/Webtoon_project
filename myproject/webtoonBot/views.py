@@ -8,6 +8,7 @@ import pandas as pd
 from collections import defaultdict
 import os
 import sqlite3
+from sqlite3 import Error
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -15,7 +16,7 @@ from torch.utils.data import Dataset, DataLoader
 
 from box import Box
 from copy import deepcopy
-
+from datetime import datetime
 import ast
 
 # from MakeMatrixDataSet import MakeMatrixDataSet
@@ -456,6 +457,19 @@ def ver3(request):
     else:
         return render(request, 'webtoonBot/ver3.html', {'webtoon_list': webtoon_list,'thumbnail_list':thumbnail_list})
 
+def connection():
+    try:
+        con = sqlite3.connect('db.sqlite3')
+        print("db connection success")
+        return con
+    except Error:
+        print(Error)
+
+def insert_one(con,one_data):
+    cursor_db = con.cursor()
+    cursor_db.execute('INSERT INTO user_rating(user,title,log_time) VALUES(?,?,?)',one_data)
+    con.commit()
+
 def ver4 (request):
     og_list = pd.read_csv("user_rating_10.csv", encoding="euc-kr")
     webtoon_list = list(og_list['title'].unique())
@@ -470,6 +484,7 @@ def ver4 (request):
     webtoon_list = [list(a) for a in zip(webtoon_list, thumb_names)]
 
 
+
     item_encoder = getCoder("item_encoder")
     item_decoder = getCoder("item_decoder")
     user_encoder = getCoder("user_encoder")
@@ -481,18 +496,24 @@ def ver4 (request):
     new_item_list = []
     if request.method == 'POST':
         new_item_list = request.POST.getlist('user_webtoon_list')
-        new_user_name = "vincenzodh3"
-        new_user_list = [new_user_name for i in range(len(new_item_list))]
-        print(new_user_list)
+        new_user_name = request.POST.get('user_name')
+        # new_user_list = [new_user_name for i in range(len(new_item_list))]
+        new_log_time_list = [datetime.now() for i in range(len(new_item_list))]
         print(new_item_list,"$")
+        con = connection()
 
-        og_rating_df = pd.read_csv("new_user_rating.csv",encoding="euc-kr")
-        new_rating_df = pd.DataFrame()
-        new_rating_df['user'] = new_user_list
-        new_rating_df['title'] = new_item_list
-        frames = [og_rating_df, new_rating_df]
-        result_df = pd.concat(frames)
-        result_df.to_csv("new_user_rating.csv",encoding="euc-kr",index=False)
+        for i in range(len(new_item_list)):
+            one_data = (new_user_name, new_item_list[i], new_log_time_list[i])
+            insert_one(con,one_data)
+
+        # og_rating_df = pd.read_csv("new_user_rating.csv",encoding="euc-kr")
+        # new_rating_df = pd.DataFrame()
+        # new_rating_df['user'] = new_user_list
+        # new_rating_df['title'] = new_item_list
+        # new_rating_df['log_time'] = new_log_time_list
+        # frames = [og_rating_df, new_rating_df]
+        # result_df = pd.concat(frames)
+        # result_df.to_csv("new_user_rating.csv",encoding="euc-kr",index=False)
 
         recvae_config, EASE_config = getConfig(new_item_list)
         recvae_list = RecVae_get_recomendation(new_user_name, new_item_list, recvae_config, model3)
