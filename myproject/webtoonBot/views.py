@@ -7,7 +7,7 @@ import pandas as pd
 # from tqdm import tqdm
 from collections import defaultdict
 import os
-
+import sqlite3
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -474,12 +474,25 @@ def ver4 (request):
     item_decoder = getCoder("item_decoder")
     user_encoder = getCoder("user_encoder")
     user_decoder = getCoder("user_decoder")
+    conn= sqlite3.connect('./db.sqlite3')
+    cur = conn.cursor()
+
 
     new_item_list = []
     if request.method == 'POST':
         new_item_list = request.POST.getlist('user_webtoon_list')
-        new_user_name = "vincenzodh"
+        new_user_name = "vincenzodh3"
+        new_user_list = [new_user_name for i in range(len(new_item_list))]
+        print(new_user_list)
         print(new_item_list,"$")
+
+        og_rating_df = pd.read_csv("new_user_rating.csv",encoding="euc-kr")
+        new_rating_df = pd.DataFrame()
+        new_rating_df['user'] = new_user_list
+        new_rating_df['title'] = new_item_list
+        frames = [og_rating_df, new_rating_df]
+        result_df = pd.concat(frames)
+        result_df.to_csv("new_user_rating.csv",encoding="euc-kr",index=False)
 
         recvae_config, EASE_config = getConfig(new_item_list)
         recvae_list = RecVae_get_recomendation(new_user_name, new_item_list, recvae_config, model3)
