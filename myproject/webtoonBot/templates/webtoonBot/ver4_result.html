@@ -1,9 +1,13 @@
 {% load static %}
-<head>
+<head xmlns="http://www.w3.org/1999/html">
     <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap-theme.min.css" integrity="sha384-6pzBo3FDv/PJ8r2KRkGHifhEocL+1X2rVCTTkUfGk7/0pbek5mMa1upzvWbrUbOZ" crossorigin="anonymous">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"></script>
+
 <style>
   * {
   font-family: Lato;
@@ -157,6 +161,23 @@ li{
   list-style:none;
 }
 
+#desc{
+    display: flex;
+    font-size: 12px;
+    pointer-events:none;
+}
+
+.align-items-center {
+  -ms-flex-align: center!important;
+  align-items: center!important;
+}
+
+.d-flex {
+  display: -ms-flexbox!important;
+  display: flex!important;
+}
+
+
 </style>
 <meta charset="UTF-8">
     <title>웹툰 추천 봇</title>
@@ -164,31 +185,37 @@ li{
 <div><img src= "{% static 'img/naver_webtoon_white.jpg' %}"</div>
     <h2> 🤖네이버 웹툰 추천 결과🤖 </h2>
     <h4>총 {{combined_list|length}}개의 웹툰이 추천되었습니다 :)</h4>
-<!--    <h2 style="text-align: center;"> 🤖네이버 웹툰 추천 결과🤖 </h2>-->
+<br><br><br>
+
+
+
 <form method="POST">
   {% csrf_token %}
 <div class="cont-bg">
-  <div class="cont-title"></div>
     <div class="cont-main">
-        {% for item,url,thumb in combined_list %}
+    {% for item,url,thumb,desc in combined_list %}
           <div class="cont-checkbox">
             <li>
-            <a href="{{url}}" target="_blank" name="user_webtoon_list" type="image" id="{{item}}" value="{{test}}"/>
-              <label for="{{item}}">
-                <img
-                  src="{% static 'thumbnails/'|add:thumb|add:'.jpg' %}"
-                />
-                <span class="cover-checkbox">
-                  <svg viewBox="0 0 12 10">
-                    <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
-                  </svg>
-                </span>
-                <div class="info">{{item}}</div>
-              </label>
+                <a href="{{url}}" target="_blank" name="user_webtoon_list" type="image" id="{{item}}" value="{{test}}"/>
+                  <label for="{{item}}">
+                    <img
+                      src="{% static 'thumbnails/'|add:thumb|add:'.jpg' %}"
+                    />
+                    <span class="cover-checkbox">
+                      <svg viewBox="0 0 12 10">
+                        <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+                      </svg>
+                    </span>
+                    <div class="info">{{item}}</div>
+                  </label>
             </li>
+              <br>
           </div>
-          {% endfor %}
+<!--        <h4 id="desc">{{desc}}</h4>-->
+
+    {% endfor %}
     </div>
+
     <br><br><br>
   </form>
 </div>

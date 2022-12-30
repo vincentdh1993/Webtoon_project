@@ -474,9 +474,8 @@ def ver4 (request):
     og_list = pd.read_csv("user_rating_10.csv", encoding="euc-kr")
     webtoon_list = list(og_list['title'].unique())
     thumbnail_list = list(og_list['thumbnail'].unique())
-    actual_url_df = pd.read_csv("actual_NW_url_with_thumbnails_ansi.csv",encoding="euc-kr")
+    actual_url_df = pd.read_csv("actual_NW_url_with_thumb_desc_ansi.csv",encoding="cp949")
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    print(device)
     model3 = torch.load("recVae_model_test.pt",map_location=torch.device('cpu'))
 
     thumb_names = [sub.replace('?', '') for sub in webtoon_list]
@@ -506,30 +505,25 @@ def ver4 (request):
             one_data = (new_user_name, new_item_list[i], new_log_time_list[i])
             insert_one(con,one_data)
 
-        # og_rating_df = pd.read_csv("new_user_rating.csv",encoding="euc-kr")
-        # new_rating_df = pd.DataFrame()
-        # new_rating_df['user'] = new_user_list
-        # new_rating_df['title'] = new_item_list
-        # new_rating_df['log_time'] = new_log_time_list
-        # frames = [og_rating_df, new_rating_df]
-        # result_df = pd.concat(frames)
-        # result_df.to_csv("new_user_rating.csv",encoding="euc-kr",index=False)
-
         recvae_config, EASE_config = getConfig(new_item_list)
         recvae_list = RecVae_get_recomendation(new_user_name, new_item_list, recvae_config, model3)
         ease_list = EASE_get_recomendation(new_user_name, new_item_list, EASE_config)
         final_list = getFinalList(recvae_list, ease_list)
         actual_url=[]
         combined_list = []
+        description_list = []
         thumb_names = [sub.replace('?', '') for sub in final_list]
         thumb_names = [sub.replace(':', '') for sub in thumb_names]
         for i in final_list:
             url = actual_url_df.loc[actual_url_df['title'] == i, 'url']
+            desc = actual_url_df.loc[actual_url_df['title'] == i, 'description']
             thumb = og_list.loc[og_list['title']==i,'thumbnail']
             url = url.values[0]
+            desc = desc.values[0]
             actual_url.append(url)
+            description_list.append(desc)
             # combined_list.append([i,url,i])
-        combined_list = list(zip(final_list,actual_url,thumb_names))
+        combined_list = list(zip(final_list,actual_url,thumb_names,description_list))
 
         return render(request, 'webtoonBot/ver4_result.html',
                       {'final_list': final_list,'new_item_list':new_item_list,'combined_list':combined_list})
