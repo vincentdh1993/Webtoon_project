@@ -161,21 +161,120 @@ li{
   list-style:none;
 }
 
-#desc{
-    display: flex;
-    font-size: 12px;
-    pointer-events:none;
-}
 
-.align-items-center {
-  -ms-flex-align: center!important;
-  align-items: center!important;
-}
+<!--body {-->
+<!--  padding: 20px;-->
+<!--  font-family: sans-serif;-->
+<!--  background: white;-->
+<!--}-->
 
-.d-flex {
-  display: -ms-flexbox!important;
-  display: flex!important;
-}
+<!--.thumb {-->
+<!--  width: 100%; /* need to overwrite inline dimensions */-->
+<!--  height: auto;-->
+<!--}-->
+
+<!--h2 {-->
+<!--  margin-bottom: .5em;-->
+<!--}-->
+
+<!--.grid-container {-->
+<!--  display: grid;-->
+<!--  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));-->
+<!--  grid-gap: 1em;-->
+
+<!--}-->
+
+
+<!--/* hover styles */-->
+<!--.location-listing {-->
+<!--  position: relative;-->
+<!--}-->
+
+<!--.location-image {-->
+<!--  line-height: 0;-->
+<!--  overflow: hidden;-->
+<!--  box-shadow: 0px 0px 0px 2.5px #00c73c;-->
+<!--}-->
+
+<!--.location-image img {-->
+<!--  filter: blur(0px);-->
+<!--  transition: filter 0.3s ease-in;-->
+<!--  transform: scale(1.1);-->
+<!--}-->
+
+<!--.location-title {-->
+<!--  font-size: 2.5em;-->
+<!--  font-weight: bold;-->
+<!--  text-decoration: none;-->
+<!--  z-index: 1;-->
+<!--  position: absolute;-->
+<!--  height: 100%;-->
+<!--  width: 100%;-->
+<!--  top: 0;-->
+<!--  left: 0;-->
+<!--  opacity: 0;-->
+<!--  transition: opacity .5s;-->
+<!--  background: rgba(0,199,60,0.6);-->
+<!--  color: white;-->
+
+<!--  /* position the text in t’ middle*/-->
+<!--  display: flex;-->
+<!--  align-items: center;-->
+<!--  flex-wrap: wrap;-->
+<!--  justify-content: center;-->
+<!--  text-overflow:ellipsis;-->
+<!--}-->
+
+<!--.location-desc {-->
+<!--  font-size: 1.5em;-->
+<!--  font-weight: bold;-->
+<!--  text-decoration: none;-->
+<!--  z-index: 1;-->
+<!--  position: absolute;-->
+<!--  height: 100%;-->
+<!--  width: 100%;-->
+<!--  top: 0;-->
+<!--  left: 0;-->
+<!--  opacity: 0;-->
+<!--  transition: opacity .5s;-->
+<!--  background: rgba(0,199,60,0);-->
+<!--  color: white;-->
+
+<!--  /* position the text in t’ middle*/-->
+<!--  display: flex;-->
+<!--  align-items: center;-->
+<!--  flex-wrap: wrap;-->
+<!--  justify-content: center;-->
+<!--  text-overflow:ellipsis;-->
+<!--}-->
+
+<!--.location-listing:hover .location-title {-->
+<!--  opacity: 1;-->
+<!--}-->
+
+<!--.location-listing:hover .location-desc {-->
+<!--  opacity: 1;-->
+<!--}-->
+
+<!--.location-listing:hover .location-image img {-->
+<!--  filter: blur(2px);-->
+<!--}-->
+
+
+<!--/* for touch screen devices */-->
+<!--@media (hover: none) {-->
+<!--  .location-title {-->
+<!--    opacity: 1;-->
+<!--  }-->
+<!--  .location-image img {-->
+<!--    filter: blur(2px);-->
+<!--  }-->
+<!--}-->
+
+<!--a { color: black; }-->
+<!--a:visited { color: black; }-->
+<!--a:hover { color: black; }-->
+<!--a:active { color: black; }-->
 
 
 </style>
@@ -186,6 +285,29 @@ li{
     <h2> 🤖네이버 웹툰 추천 결과🤖 </h2>
     <h4>총 {{combined_list|length}}개의 웹툰이 추천되었습니다 :)</h4>
 <br><br><br>
+
+
+<!--<div class="child-page-listing">-->
+
+<!--  <div class="grid-container">-->
+<!--    {% for item,url,thumb,desc in combined_list %}-->
+<!--        <article id="3685" class="location-listing">-->
+
+<!--          <a class="location-title" href="{{url}}" target="_blank">{{item}}</a>-->
+<!--&lt;!&ndash;            <a class="location-desc" href="{{url}}" target="_blank">{{desc}}</a>&ndash;&gt;-->
+
+
+<!--          <div class="location-image">-->
+<!--            <a href="{{url}}" target="_blank">-->
+<!--                <img width="300" class="thumb" height="169" src="{% static 'thumbnails/'|add:thumb|add:'.jpg' %}">    </a>-->
+
+<!--          </div>-->
+<!--        </article>-->
+<!--    {% endfor %}-->
+
+<!--  </div>-->
+<!--</div>-->
+
 
 
 
