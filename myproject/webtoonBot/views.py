@@ -474,7 +474,7 @@ def ver4 (request):
     og_list = pd.read_csv("user_rating_10.csv", encoding="euc-kr")
     webtoon_list = list(og_list['title'].unique())
     thumbnail_list = list(og_list['thumbnail'].unique())
-    actual_url_df = pd.read_csv("actual_NW_url_with_thumb_desc_ansi.csv",encoding="cp949")
+    actual_url_df = pd.read_csv("actual_NW_url_with_thumb_desc_genre.csv",encoding="cp949")
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     model3 = torch.load("recVae_model_test.pt",map_location=torch.device('cpu'))
 
