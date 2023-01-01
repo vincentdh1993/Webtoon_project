@@ -482,21 +482,17 @@ def ver4 (request):
     thumb_names = [sub.replace(':', '') for sub in thumb_names]
     webtoon_list = [list(a) for a in zip(webtoon_list, thumb_names)]
 
-
-
     item_encoder = getCoder("item_encoder")
     item_decoder = getCoder("item_decoder")
     user_encoder = getCoder("user_encoder")
     user_decoder = getCoder("user_decoder")
     conn= sqlite3.connect('./db.sqlite3')
-    cur = conn.cursor()
 
 
-    new_item_list = []
+
     if request.method == 'POST':
         new_item_list = request.POST.getlist('user_webtoon_list')
         new_user_name = request.POST.get('user_name')
-        # new_user_list = [new_user_name for i in range(len(new_item_list))]
         new_log_time_list = [datetime.now() for i in range(len(new_item_list))]
         print(new_item_list,"$")
         con = connection()
@@ -509,21 +505,31 @@ def ver4 (request):
         recvae_list = RecVae_get_recomendation(new_user_name, new_item_list, recvae_config, model3)
         ease_list = EASE_get_recomendation(new_user_name, new_item_list, EASE_config)
         final_list = getFinalList(recvae_list, ease_list)
+
         actual_url=[]
-        combined_list = []
         description_list = []
+        genre_list = []
+
         thumb_names = [sub.replace('?', '') for sub in final_list]
         thumb_names = [sub.replace(':', '') for sub in thumb_names]
+
         for i in final_list:
+
             url = actual_url_df.loc[actual_url_df['title'] == i, 'url']
             desc = actual_url_df.loc[actual_url_df['title'] == i, 'description']
-            thumb = og_list.loc[og_list['title']==i,'thumbnail']
+            genre = actual_url_df.loc[actual_url_df['title'] == i, 'genre']
+
             url = url.values[0]
             desc = desc.values[0]
+            genre = genre.values[0]
+
+            # desc = ast.literal_eval(desc)
+            genre = ast.literal_eval(genre)
+
             actual_url.append(url)
             description_list.append(desc)
-            # combined_list.append([i,url,i])
-        combined_list = list(zip(final_list,actual_url,thumb_names,description_list))
+            genre_list.append(genre)
+        combined_list = list(zip(final_list,actual_url,thumb_names,description_list,genre_list))
 
         return render(request, 'webtoonBot/ver4_result.html',
                       {'final_list': final_list,'new_item_list':new_item_list,'combined_list':combined_list})
