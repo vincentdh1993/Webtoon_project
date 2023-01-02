@@ -311,20 +311,20 @@ li{
 
     <div class="cont-title"></div>
     <div class="cont-main">
-        {% for tmp,val in webtoon_list %}
+        {% for title,thumb,first_letter in webtoon_list %}
           <div class="cont-checkbox">
             <li>
-            <input name="user_webtoon_list" type="checkbox" id="{% static 'myCheckbox-'|add:tmp %}" value="{{tmp}}"/>
-              <label for="{% static 'myCheckbox-'|add:tmp %}">
+            <input name="user_webtoon_list" type="checkbox" id="{% static 'myCheckbox-'|add:title %}" value="{{title}}"/>
+              <label for="{% static 'myCheckbox-'|add:title %}">
                 <img
-                  src="{% static 'thumbnails/'|add:val|add:'.jpg' %}"
+                  src="{% static 'thumbnails/'|add:thumb|add:'.jpg' %}"
                 />
                 <span class="cover-checkbox">
                   <svg viewBox="0 0 12 10">
                     <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
                   </svg>
                 </span>
-                <div class="info">{{tmp}}</div>
+                <div class="info">{{title}} {{first_letter}}</div>
               </label>
             </li>
           </div>
