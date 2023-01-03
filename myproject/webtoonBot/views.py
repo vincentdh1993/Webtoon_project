@@ -476,6 +476,9 @@ def getFirstLetter(d,webtoon_list):
         first_letter.append(d[i])
     return first_letter
 
+def ver4_result (request):
+    return render(request, 'webtoonBot/ver4_result.html')
+
 
 def ver4 (request):
     og_list = pd.read_csv("user_rating_10.csv", encoding="euc-kr")
