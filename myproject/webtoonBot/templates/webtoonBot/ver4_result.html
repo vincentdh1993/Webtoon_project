@@ -359,6 +359,20 @@ a:active { color: black; }
 
 
 </style>
+
+<script>
+    function thanks() {
+       alert("사용해 주셔서 감사합니다 :) ");
+       return true;
+    }
+
+    function sorry() {
+       alert("더 좋은 추천을 위해 노력하겠습니다 :) ");
+       return true;
+    }
+</script>
+
+
 <meta charset="UTF-8">
     <title>웹툰 추천 봇</title>
 </head>
@@ -366,11 +380,13 @@ a:active { color: black; }
     <h2> 🤖네이버 웹툰 추천 결과🤖 </h2>
     <h4>총 {{combined_list|length}}개의 웹툰이 추천되었습니다 :)</h4>
 <br><br>
-
+    {{new_item_list2}}
 <div></div>
 
 <form method="POST">
   {% csrf_token %}
+
+
 
 <div class="cont-bg">
     <div class="cont-main">
@@ -400,7 +416,19 @@ a:active { color: black; }
     </div>
   </form>
     <br><br><br>
-    <form action="/ver4">
-        <input class="btn btn-primary btn-jittery" id="back" type="submit" value="처음부터 다시하기" />
+    <form method="post">
+        {% csrf_token %}
+        <input class="btn btn-primary btn-jittery" name="back" id="back" type="submit" value="처음부터 다시하기" />
     </form>
+
+     <form method="post">
+        {% csrf_token %}
+        <input class="btn btn-primary btn-jittery" name="submit_good" id="submit_good" type="submit" value="추천 굳" onclick="thanks()"/>
+    </form>
+
+    <form method="post">
+        {% csrf_token %}
+        <input class="btn btn-primary btn-jittery" name="submit_good" id="submit_bad" type="submit" value="추천 밷" onclick="sorry()"/>
+    </form>
+
 </div>

@@ -5,6 +5,7 @@ import numpy as np
 import scipy.sparse as sp
 import pandas as pd
 # from tqdm import tqdm
+
 from collections import defaultdict
 import os
 import sqlite3
@@ -479,8 +480,20 @@ def getFirstLetter(d,webtoon_list):
 def ver4_result (request):
     return render(request, 'webtoonBot/ver4_result.html')
 
+global new_item_list
+global new_user_name
+global flag
+
+new_item_list=[]
+new_user_name=""
+flag = 0
+
 
 def ver4(request):
+    global new_item_list
+    global new_user_name
+    global flag
+    flag = 0
     og_list = pd.read_csv("user_rating_10.csv", encoding="euc-kr")
     webtoon_list = list(og_list['title'].unique())
     thumbnail_list = list(og_list['thumbnail'].unique())
@@ -504,10 +517,29 @@ def ver4(request):
     if request.method == 'POST':
         if 'submit_good' in request.POST:
             print("submit_good")
+            print(new_user_name,new_item_list)
+            new_log_time_list = [datetime.now() for i in range(len(new_item_list))]
+            con = connection()
+            for i in range(len(new_item_list)):
+                one_data = (new_user_name, new_item_list[i], new_log_time_list[i])
+                insert_one(con, one_data)
+
+            return render(request, 'webtoonBot/ver4.html',
+                          {'webtoon_list': webtoon_list, 'thumbnail_list': thumbnail_list})
+
+
         elif 'submit_bad' in request.POST:
             print("submit_bad")
-        elif '추천 받기!' in request.POST:
-            print("submit")
+            print(new_item_list, "@@")
+            print(new_user_name)
+            return render(request, 'webtoonBot/ver4.html',
+                          {'webtoon_list': webtoon_list, 'thumbnail_list': thumbnail_list})
+
+
+        elif 'back' in request.POST:
+            print("going back")
+            return render(request, 'webtoonBot/ver4.html',
+                          {'webtoon_list': webtoon_list, 'thumbnail_list': thumbnail_list})
         else:
             print("none clicked")
 
@@ -517,11 +549,11 @@ def ver4(request):
         new_user_name = request.POST.get('user_name')
         new_log_time_list = [datetime.now() for i in range(len(new_item_list))]
         print(new_item_list,"$")
-        con = connection()
-
-        for i in range(len(new_item_list)):
-            one_data = (new_user_name, new_item_list[i], new_log_time_list[i])
-            insert_one(con,one_data)
+        # con = connection()
+        #
+        # for i in range(len(new_item_list)):
+        #     one_data = (new_user_name, new_item_list[i], new_log_time_list[i])
+        #     insert_one(con,one_data)
 
         recvae_config, EASE_config = getConfig(new_item_list)
         recvae_list = RecVae_get_recomendation(new_user_name, new_item_list, recvae_config, model3)
@@ -552,7 +584,7 @@ def ver4(request):
         combined_list = list(zip(final_list,actual_url,thumb_names,description_list,genre_list))
 
         return render(request, 'webtoonBot/ver4_result.html',
-                      {'final_list': final_list,'new_item_list':new_item_list,'combined_list':combined_list})
+                      {'new_item_list2':new_item_list,'final_list': final_list,'new_item_list':new_item_list,'combined_list':combined_list})
     else:
         return render(request, 'webtoonBot/ver4.html', {'webtoon_list': webtoon_list,'thumbnail_list':thumbnail_list})
 

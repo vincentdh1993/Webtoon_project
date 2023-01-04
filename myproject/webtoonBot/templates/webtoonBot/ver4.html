@@ -219,6 +219,9 @@ li{
     display: block !important;
 }
 
+#hello{
+    pointer-events:none;
+}
 
 
 </style>
@@ -234,6 +237,7 @@ li{
       document.getElementById('submit').src = "{% static 'img/load.gif' %}";
       document.getElementById('cont-bg').style.filter = "blur(2px)";
       document.getElementById('cont-bg').style.pointerEvents = "none";
+      document.getElementById('submit').style.pointerEvents = "none";
 
 
       setTimeout(function() {
@@ -283,14 +287,13 @@ li{
 <!--    <h4>즐겨보았던 웹툰들을 선택하고 우측 초록버튼을 클릭하세요 :)</h4>-->
 </div>
 
-<div id="showme" style="display:none;">You are signed in now.</div>
-
 <div id="loadingGif" style="display:none">
     <img src="{% static 'img/load.gif' %}" width="200" height="200">
 </div>
 
 <form action="#" method="POST" id="hello" onsubmit="return false;">
-  <input class="btn_green_white_innerfade btn_medium" type="submit" name="Login" id="Login" value="Sign in" width="104" height="25" border="0" tabindex="5" onclick="showDiv()">
+    {% csrf_token %}
+  <input class="btn_green_white_innerfade btn_medium" type="submit" name="Login" id="Login" value="Sign in" width="104" height="25" border="0" tabindex="5">
 </form>
 
 
