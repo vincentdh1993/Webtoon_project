@@ -470,17 +470,29 @@ def insert_one(con,one_data):
     cursor_db.execute('INSERT INTO user_rating(user,title,log_time) VALUES(?,?,?)',one_data)
     con.commit()
 
+def getFirstLetter(d,webtoon_list):
+    first_letter=[]
+    for i in webtoon_list:
+        first_letter.append(d[i])
+    return first_letter
+
+def ver4_result (request):
+    return render(request, 'webtoonBot/ver4_result.html')
+
+
 def ver4 (request):
     og_list = pd.read_csv("user_rating_10.csv", encoding="euc-kr")
     webtoon_list = list(og_list['title'].unique())
     thumbnail_list = list(og_list['thumbnail'].unique())
+    first_letter = getFirstLetter(getCoder("first_letter"),webtoon_list)
     actual_url_df = pd.read_csv("actual_NW_url_with_thumb_desc_genre.csv",encoding="cp949")
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     model3 = torch.load("recVae_model_test.pt",map_location=torch.device('cpu'))
 
     thumb_names = [sub.replace('?', '') for sub in webtoon_list]
     thumb_names = [sub.replace(':', '') for sub in thumb_names]
-    webtoon_list = [list(a) for a in zip(webtoon_list, thumb_names)]
+    print(len(webtoon_list),len(first_letter))
+    webtoon_list = [list(a) for a in zip(webtoon_list, thumb_names,first_letter)]
 
     item_encoder = getCoder("item_encoder")
     item_decoder = getCoder("item_decoder")
