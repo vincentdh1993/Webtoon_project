@@ -480,7 +480,7 @@ def ver4_result (request):
     return render(request, 'webtoonBot/ver4_result.html')
 
 
-def ver4 (request):
+def ver4(request):
     og_list = pd.read_csv("user_rating_10.csv", encoding="euc-kr")
     webtoon_list = list(og_list['title'].unique())
     thumbnail_list = list(og_list['thumbnail'].unique())
@@ -501,8 +501,18 @@ def ver4 (request):
     conn= sqlite3.connect('./db.sqlite3')
 
 
-
     if request.method == 'POST':
+        if 'submit_good' in request.POST:
+            print("submit_good")
+        elif 'submit_bad' in request.POST:
+            print("submit_bad")
+        elif '추천 받기!' in request.POST:
+            print("submit")
+        else:
+            print("none clicked")
+
+
+        submit = request.POST.get('submit')
         new_item_list = request.POST.getlist('user_webtoon_list')
         new_user_name = request.POST.get('user_name')
         new_log_time_list = [datetime.now() for i in range(len(new_item_list))]
@@ -534,8 +544,6 @@ def ver4 (request):
             url = url.values[0]
             desc = desc.values[0]
             genre = genre.values[0]
-
-            # desc = ast.literal_eval(desc)
             genre = ast.literal_eval(genre)
 
             actual_url.append(url)
