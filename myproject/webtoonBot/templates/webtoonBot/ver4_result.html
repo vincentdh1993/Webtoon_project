@@ -356,6 +356,9 @@ a:active { color: black; }
     background-color: #00c73c;
 }
 
+.header{
+    pointer-events: none; !important
+    }
 
 
 </style>
@@ -380,42 +383,37 @@ a:active { color: black; }
     <h2> 🤖네이버 웹툰 추천 결과🤖 </h2>
     <h4>총 {{combined_list|length}}개의 웹툰이 추천되었습니다 :)</h4>
 <br><br>
-    {{new_item_list2}}
 <div></div>
 
-<form method="POST">
-  {% csrf_token %}
 
 
+{% for log in result_log %}
+        {% for k,v in log.items %}
+            <div class="header">
+                <h3 style="pointer-events:none;">{{k}}</h3>
+            </div>
+                <div class="cont-main">
+                    {% for item,thumb,url in v %}
+                        <div class="cont-checkbox">
+                                <a href="{{url}}" target="_blank" name="user_webtoon_list" id="{{item}}" type="image" value="{{test}}"/>
+                                  <label for="{{item}}">
+                                    <img
+                                      src="{% static 'thumbnails/'|add:thumb|add:'.jpg' %}"
+                                    />
+                                    <span class="cover-checkbox">
+                                    </span>
+                                    <div class="info">{{item}}</div>
+                                  </label>
+                        </div>
+                    {% endfor %}
+                </div>
+            <br><br>
+        {% endfor %}
+{% endfor %}
 
+
+    <br><br>
 <div class="cont-bg">
-    <div class="cont-main">
-    {% for item,url,thumb,desc,genre in combined_list %}
-          <div class="cont-checkbox">
-            <li>
-<!--                <input name="user_webtoon_list" type="checkbox" id="{% static 'myCheckbox-'|add:item %}" value="{{item}}"/>-->
-<!--                <label for="{% static 'myCheckbox-'|add:item %}">-->
-                <a href="{{url}}" target="_blank" name="user_webtoon_list" type="image" id="{{item}}" value="{{test}}"/>
-                  <label for="{{item}}">
-                    <img
-                      src="{% static 'thumbnails/'|add:thumb|add:'.jpg' %}"
-                    />
-                    <span class="cover-checkbox">
-                      <svg viewBox="0 0 12 10">
-                        <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
-                      </svg>
-                    </span>
-                    <div class="info">{{item}}</div>
-                  </label>
-            </li>
-              <br>
-          </div>
-<!--        <h4 id="desc">{{desc}}</h4>-->
-
-    {% endfor %}
-    </div>
-  </form>
-    <br><br><br>
     <form method="post">
         {% csrf_token %}
         <input class="btn btn-primary btn-jittery" name="back" id="back" type="submit" value="처음부터 다시하기" />
@@ -430,5 +428,4 @@ a:active { color: black; }
         {% csrf_token %}
         <input class="btn btn-primary btn-jittery" name="submit_good" id="submit_bad" type="submit" value="추천 밷" onclick="sorry()"/>
     </form>
-
 </div>

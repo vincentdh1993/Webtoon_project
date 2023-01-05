@@ -477,6 +477,97 @@ def getFirstLetter(d,webtoon_list):
         first_letter.append(d[i])
     return first_letter
 
+def get_Genre(new_item_list):
+  d = {}
+  look_df = pd.read_csv("actual_NW_url_with_thumb_desc_genre.csv",encoding="euc-kr")
+  for i in new_item_list:
+    picked_genre = (look_df.loc[look_df['title'] == i, 'genre'])
+    picked_genre = picked_genre.values[0]
+    picked_genre = ast.literal_eval(picked_genre)
+    # print(picked_genre,type(picked_genre))
+    d[i] = picked_genre
+  return d
+
+def getTuple(title):
+  look_df = pd.read_csv("actual_NW_url_with_thumb_desc_genre.csv", encoding="cp949")
+  url = look_df.loc[look_df['title'] == title, 'url'].values[0]
+  thumb = title.replace('?',"")
+  thumb = thumb.replace(':',"")
+  temp_tuple = (title, thumb, url)
+  return temp_tuple
+
+def reverse_D(pick_genreD):
+  td = {}
+  for i in pick_genreD:
+    for j in pick_genreD[i]:
+      if j in td:
+        td[j] = td[j]+[i]
+      else:
+        td[j] = [i]
+  return td
+
+
+def getResult_log(new_item_list, final_list):
+    look_df = pd.read_csv("actual_NW_url_with_thumb_desc_genre.csv",encoding="cp949")
+    pick_genreD = get_Genre(new_item_list)
+    rec_genreD = get_Genre(final_list)
+    r_pick = (reverse_D(pick_genreD))
+    r_rec = (reverse_D(rec_genreD))
+    r_pick_set = set(r_pick)
+    r_rec_set = set(r_rec)
+
+    intersection = []
+    for name in r_pick_set.intersection(r_rec_set):
+        intersection.append(name)
+
+    r_pick_set = set(r_pick)
+    r_rec_set = set(r_rec)
+
+    intersection = []
+    for name in r_pick_set.intersection(r_rec_set):
+        intersection.append(name)
+
+    check = []
+
+    result_log = {}
+    result_log = []
+
+    if len(new_item_list) == 0:
+        final_list_tuple = []
+        for i in final_list:
+            final_list_tuple.append(getTuple(i))
+
+        result_log.append({"처음 웹툰을 접하는 당신을 위한 추천 웹툰!": final_list_tuple})
+        # result_log["처음 웹툰을 접하는 당신을 위한 추천 웹툰!"] = final_list
+
+    else:
+        for genre in intersection:
+            if len(check) == len(final_list):
+                break
+            else:
+                temp_str = "재밌게본 " + genre + " 장르의 " + r_pick[genre][0] + " 만큼 재밌는 작품!"
+                temp = r_rec[genre]
+                temp_list = []
+                for i in temp:
+                    if i in check:
+                        count = 0
+                    else:
+                        temp_list.append(getTuple(i))
+                        check.append(i)
+                if len(temp_list) != 0:
+                    result_log.append({temp_str: temp_list})
+                    # result_log[temp_str] = temp_list
+
+        left_over = (list(set(check).symmetric_difference(set(final_list))))
+        left_over_tuple = []
+        for i in left_over:
+            left_over_tuple.append(getTuple(i))
+
+        if len(left_over) != 0:
+            result_log.append({"당신과 비슷한 취향의 독자들이 읽은 웹툰들!": left_over_tuple})
+            # result_log["당신과 비슷한 취향의 독자들이 읽은 웹툰들!"] = left_over
+    return result_log
+
 def ver4_result (request):
     return render(request, 'webtoonBot/ver4_result.html')
 
@@ -549,17 +640,12 @@ def ver4(request):
         new_user_name = request.POST.get('user_name')
         new_log_time_list = [datetime.now() for i in range(len(new_item_list))]
         print(new_item_list,"$")
-        # con = connection()
-        #
-        # for i in range(len(new_item_list)):
-        #     one_data = (new_user_name, new_item_list[i], new_log_time_list[i])
-        #     insert_one(con,one_data)
 
         recvae_config, EASE_config = getConfig(new_item_list)
         recvae_list = RecVae_get_recomendation(new_user_name, new_item_list, recvae_config, model3)
         ease_list = EASE_get_recomendation(new_user_name, new_item_list, EASE_config)
         final_list = getFinalList(recvae_list, ease_list)
-
+        result_log = getResult_log(new_item_list, final_list)
         actual_url=[]
         description_list = []
         genre_list = []
@@ -582,9 +668,17 @@ def ver4(request):
             description_list.append(desc)
             genre_list.append(genre)
         combined_list = list(zip(final_list,actual_url,thumb_names,description_list,genre_list))
+        print(type(combined_list[0]))
 
+        test = [
+
+            {'재밌게본 스토리 장르의 지금 이 순간 마법처럼 만큼 재밌는 작품!': [("아는사람 이야기", "아는사람 이야기", "url"), ("스튜디오 짭쪼롬", "스튜디오 짭쪼롬", "url2")]},
+            {'재밌게본 에피소드 장르의 오늘 밤은 어둠이 무서워요 만큼 재밌는 작품!': [('낢이 사는 이야기', '낢이 사는 이야기', 'url3')]},
+            {'재밌게본 옴니버스 장르의 나는 어디에 있는 거니 만큼 재밌는 작품!': [('한 살이라도 어릴 때', '한 살이라도 어릴 때', 'url4')]},
+
+        ]
         return render(request, 'webtoonBot/ver4_result.html',
-                      {'new_item_list2':new_item_list,'final_list': final_list,'new_item_list':new_item_list,'combined_list':combined_list})
+                      {'test':test,'result_log':result_log,'new_item_list2':new_item_list,'final_list': final_list,'new_item_list':new_item_list,'combined_list':combined_list})
     else:
         return render(request, 'webtoonBot/ver4.html', {'webtoon_list': webtoon_list,'thumbnail_list':thumbnail_list})
 
