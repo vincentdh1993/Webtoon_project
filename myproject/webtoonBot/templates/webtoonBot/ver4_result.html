@@ -12,7 +12,8 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <style>
-  * {
+
+* {
   font-family: Lato;
   margin: 0;
   padding: 0;
@@ -116,38 +117,6 @@ label img {
   filter: grayscale(0%);
 }
 
-label .cover-checkbox {
-  position: absolute;
-  right: 5px;
-  top: 3px;
-  z-index: 1;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: var(--box-shadow);
-  border: 2px solid #fff;
-  transition: transform var(--transition),
-    opacity calc(var(--transition) * 1.2) linear;
-  opacity: 0;
-  transform: scale(0);
-}
-
-label .cover-checkbox svg {
-  width: 13px;
-  height: 11px;
-  display: inline-block;
-  vertical-align: top;
-  fill: none;
-  margin: 2px 10px 0 3px;
-  stroke: #fff;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-dasharray: 16px;
-  transition: stroke-dashoffset 0.2s ease var(--transition);
-  stroke-dashoffset: 16px;
-
-}
 
 label .info {
   text-align: center;
@@ -158,206 +127,6 @@ label .info {
 
 div{
     text-align: center;
-    }
-
-li{
-  list-style:none;
-}
-
-
-body {
-  padding: 20px;
-  font-family: sans-serif;
-  background: white;
-}
-
-.thumb {
-  width: 100%; /* need to overwrite inline dimensions */
-  height: auto;
-}
-
-h2 {
-  margin-bottom: .5em;
-}
-
-.grid-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  grid-gap: 1em;
-
-}
-
-
-/* hover styles */
-.location-listing {
-  position: relative;
-}
-
-.location-image {
-  line-height: 0;
-  overflow: hidden;
-  box-shadow: 0px 0px 0px 2.5px #00c73c;
-}
-
-.location-image img {
-  filter: blur(0px);
-  transition: filter 0.3s ease-in;
-  transform: scale(1.1);
-}
-
-.location-title {
-  font-size: 2.5em;
-  font-weight: bold;
-  text-decoration: none;
-  z-index: 1;
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  top: 0;
-  left: 0;
-  opacity: 0;
-  transition: opacity .5s;
-  background: rgba(0,199,60,0.6);
-  color: white;
-
-  /* position the text in t’ middle*/
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  justify-content: center;
-  text-overflow:ellipsis;
-}
-
-.location-desc {
-  font-size: 1.5em;
-  font-weight: bold;
-  text-decoration: none;
-  z-index: 1;
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  top: 0;
-  left: 0;
-  opacity: 0;
-  transition: opacity .5s;
-  background: rgba(0,199,60,0);
-  color: white;
-
-  /* position the text in t’ middle*/
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  justify-content: center;
-  text-overflow:ellipsis;
-}
-
-.location-listing:hover .location-title {
-  opacity: 1;
-}
-
-.location-listing:hover .location-desc {
-  opacity: 1;
-}
-
-.location-listing:hover .location-image img {
-  filter: blur(2px);
-}
-
-
-/* for touch screen devices */
-@media (hover: none) {
-  .location-title {
-    opacity: 1;
-  }
-  .location-image img {
-    filter: blur(2px);
-  }
-}
-
-a { color: black; }
-a:visited { color: black; }
-a:active { color: black; }
-
-
-.btn-success {
-  position: flex;
-  top: 230px;
-  right: 10px;
-  z-index: 99;
-  font-size: 15px;
-  border: none;
-  outline: none;
-  background-color: #00c73c;
-  color: white;
-  cursor: pointer;
-  padding: 2.5px;
-  border-radius: 400px;
-}
-
-.btn-success#submit_bad {
-  position: flex;
-  top: 230px;
-  right: 10px;
-  z-index: 99;
-  font-size: 15px;
-  border: none;
-  outline: none;
-  background-color: red;
-  color: white;
-  cursor: pointer;
-  padding: 2.5px;
-  border-radius: 400px;
-}
-
-
-#rating {
-    display:flex;
-}
-
-#sb{
-    display:flex;
-}
-
-.wrap {
-  height: 20%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.button#back {
-  width: 140px;
-  height: 45px;
-  font-family: 'Roboto', sans-serif;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 2.5px;
-  font-weight: 500;
-  color: #000;
-  background-color: #fff;
-  border: none;
-  border-radius: 45px;
-  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease 0s;
-  cursor: pointer;
-  outline: none;
-}
-
-.button#back:hover {
-  background-color: #2ee59d;
-  box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
-  color: #fff;
-  transform: translateY(-7px);
-}
-
-
-
-#back{
-    background-color: #00c73c;
-}
-
-.header{
-    pointer-events: none; !important
     }
 
 
@@ -383,37 +152,35 @@ a:active { color: black; }
     <h2> 🤖네이버 웹툰 추천 결과🤖 </h2>
     <h4>총 {{combined_list|length}}개의 웹툰이 추천되었습니다 :)</h4>
 <br><br>
-<div></div>
 
 
-
+<div class="cont-bg">
 {% for log in result_log %}
         {% for k,v in log.items %}
-            <div class="header">
-                <h3 style="pointer-events:none;">{{k}}</h3>
-            </div>
-                <div class="cont-main">
-                    {% for item,thumb,url in v %}
-                        <div class="cont-checkbox">
-                                <a href="{{url}}" target="_blank" name="user_webtoon_list" id="{{item}}" type="image" value="{{test}}"/>
-                                  <label for="{{item}}">
-                                    <img
-                                      src="{% static 'thumbnails/'|add:thumb|add:'.jpg' %}"
-                                    />
-                                    <span class="cover-checkbox">
-                                    </span>
-                                    <div class="info">{{item}}</div>
-                                  </label>
-                        </div>
-                    {% endfor %}
-                </div>
+                <h3 style="pointer-events:none; !important">{{k}}</h3>
+                    <div class="cont-main">
+                        {% for item,thumb,url in v %}
+                            <div class="cont-checkbox">
+                                <input name="user_webtoon_list" id="{{item}}"/>
+                                      <label for="{{item}}">
+                                            <p><a target="_blank" href="{{url}}"><img src="{% static 'thumbnails/'|add:thumb|add:'.jpg' %}"></a></p>
+                                            <div class="info">
+                                                <a href="{{url}}" target="_blank" > {{item}}</a>
+                                            </div>
+                                      </label>
+                            </div>
+                        {% endfor %}
+                    </div>
             <br><br>
         {% endfor %}
 {% endfor %}
+</div>
 
 
+
+<body>
     <br><br>
-<div class="cont-bg">
+<div class="cont-main">
     <form method="post">
         {% csrf_token %}
         <input class="btn btn-primary btn-jittery" name="back" id="back" type="submit" value="처음부터 다시하기" />
@@ -421,11 +188,12 @@ a:active { color: black; }
 
      <form method="post">
         {% csrf_token %}
-        <input class="btn btn-primary btn-jittery" name="submit_good" id="submit_good" type="submit" value="추천 굳" onclick="thanks()"/>
+        <input class="btn btn-primary btn-jittery" name="submit_good" id="submit_good" type="submit" value="Good 추천" onclick="thanks()"/>
     </form>
 
     <form method="post">
         {% csrf_token %}
-        <input class="btn btn-primary btn-jittery" name="submit_good" id="submit_bad" type="submit" value="추천 밷" onclick="sorry()"/>
+        <input class="btn btn-primary btn-jittery" name="submit_good" id="submit_bad" type="submit" value="Bad 추천" onclick="sorry()"/>
     </form>
 </div>
+</body>
