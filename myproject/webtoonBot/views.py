@@ -545,7 +545,7 @@ def getResult_log(new_item_list, final_list):
             if len(check) == len(final_list):
                 break
             else:
-                temp_str = "재밌게본 " + genre + " 장르의 " + r_pick[genre][0] + " 만큼 재밌는 작품!"
+                temp_str = "재밌게본 '" + r_pick[genre][0] + "' 만큼 재밌는 작품! "+"(장르: " + genre + ")"
                 temp = r_rec[genre]
                 temp_list = []
                 for i in temp:

@@ -129,6 +129,35 @@ div{
     text-align: center;
     }
 
+#submit_good {
+  width: 100%
+  border: none;
+  color: white;
+  padding: 16px 32px;
+  text-decoration: none;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+#submit_bad {
+  border: none;
+  color: white;
+  padding: 16px 32px;
+  text-decoration: none;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+#back {
+  border: none;
+  color: white;
+  padding: 16px 32px;
+  text-decoration: none;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+
 
 </style>
 
@@ -179,21 +208,24 @@ div{
 
 
 <body>
-    <br><br>
 <div class="cont-main">
     <form method="post">
         {% csrf_token %}
-        <input class="btn btn-primary btn-jittery" name="back" id="back" type="submit" value="처음부터 다시하기" />
+        <input class="btn btn-success" name="back" id="back" type="submit" value="처음부터 다시하기" />
     </form>
+</div>
+<br><br>
 
+<h4>추천 결과를 평가해 주세요</h4>
+<div class="cont-main">
      <form method="post">
         {% csrf_token %}
-        <input class="btn btn-primary btn-jittery" name="submit_good" id="submit_good" type="submit" value="Good 추천" onclick="thanks()"/>
+        <input class="btn btn-success" name="submit_good" id="submit_good" type="submit" value="대만족 :)" onclick="thanks()"/>
     </form>
-
     <form method="post">
         {% csrf_token %}
-        <input class="btn btn-primary btn-jittery" name="submit_good" id="submit_bad" type="submit" value="Bad 추천" onclick="sorry()"/>
+        <input class="btn btn-danger" name="submit_bad" id="submit_bad" type="submit" value="불만족 :(" onclick="sorry()"/>
     </form>
 </div>
 </body>
+<br><br>
