@@ -200,6 +200,9 @@ div{
 <div class="cont-bg">
 {% for x in result_log %}
         {% for a,b in x.0 %}
+            {%if a == 1%}
+                <p> {{a}} 여기 조건으로 아무것도 안들어왔을때, 0 일때 두가지 상황 고쳐야함 sdafdasfa</p>
+            {% endif %}
                 <h3><span class="greenText">'{{a}}'</span>&nbsp;<span class="blackText">만큼 재밌는 웹툰</span>&nbsp;<span class="genreText">(장르: {{b}})</span></h3>
                     <div class="cont-main">
                         {% for item,thumb,url in x.1 %}
