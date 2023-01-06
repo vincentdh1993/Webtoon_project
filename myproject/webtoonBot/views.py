@@ -508,7 +508,6 @@ def reverse_D(pick_genreD):
 
 
 def getResult_log(new_item_list, final_list):
-    look_df = pd.read_csv("actual_NW_url_with_thumb_desc_genre.csv",encoding="cp949")
     pick_genreD = get_Genre(new_item_list)
     rec_genreD = get_Genre(final_list)
     r_pick = (reverse_D(pick_genreD))
@@ -537,7 +536,8 @@ def getResult_log(new_item_list, final_list):
         for i in final_list:
             final_list_tuple.append(getTuple(i))
 
-        result_log.append({"처음 웹툰을 접하는 당신을 위한 추천 웹툰!": final_list_tuple})
+        # result_log.append([(1,1)])
+        result_log.append([[(1, 1)], final_list_tuple])
         # result_log["처음 웹툰을 접하는 당신을 위한 추천 웹툰!"] = final_list
 
     else:
@@ -545,7 +545,8 @@ def getResult_log(new_item_list, final_list):
             if len(check) == len(final_list):
                 break
             else:
-                temp_str = "재밌게 본 '" + r_pick[genre][0] + "' 만큼 재밌는 작품! "+"(장르: " + genre + ")"
+                temp_str = "재밌게본 " + genre + " 장르의 " + r_pick[genre][0] + " 만큼 재밌는 작품!"
+                temp_str = [(r_pick[genre][0], genre)]
                 temp = r_rec[genre]
                 temp_list = []
                 for i in temp:
@@ -555,7 +556,8 @@ def getResult_log(new_item_list, final_list):
                         temp_list.append(getTuple(i))
                         check.append(i)
                 if len(temp_list) != 0:
-                    result_log.append({temp_str: temp_list})
+                    # result_log.append([temp_str])
+                    result_log.append([temp_str,temp_list])
                     # result_log[temp_str] = temp_list
 
         left_over = (list(set(check).symmetric_difference(set(final_list))))
@@ -564,7 +566,8 @@ def getResult_log(new_item_list, final_list):
             left_over_tuple.append(getTuple(i))
 
         if len(left_over) != 0:
-            result_log.append({"당신과 비슷한 취향의 독자들이 읽은 웹툰들!": left_over_tuple})
+            # result_log.append([(0,0)])
+            result_log.append([[(0, 0)], left_over_tuple])
             # result_log["당신과 비슷한 취향의 독자들이 읽은 웹툰들!"] = left_over
     return result_log
 
@@ -691,6 +694,8 @@ def ver4(request):
                  [[("오늘 밤은 어둠이 무서워요","에피소드")],[('낢이 사는 이야기', '낢이 사는 이야기', 'url3')]],
                  [[("나는 어디에 있는 거니","옴니버스")],[('한 살이라도 어릴 때', '한 살이라도 어릴 때', 'url4')]]
                 ]
+        print("@@")
+        print(result_log)
 
         return render(request, 'webtoonBot/ver4_result.html',
                       {'test2':test2,'test':test,'result_log':result_log,'new_item_list2':new_item_list,'final_list': final_list,'new_item_list':new_item_list,'combined_list':combined_list})

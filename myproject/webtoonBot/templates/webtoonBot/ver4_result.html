@@ -198,7 +198,7 @@ div{
 <br><br>
 
 <div class="cont-bg">
-{% for x in test2 %}
+{% for x in result_log %}
         {% for a,b in x.0 %}
                 <h3><span class="greenText">'{{a}}'</span>&nbsp;<span class="blackText">만큼 재밌는 웹툰</span>&nbsp;<span class="genreText">(장르: {{b}})</span></h3>
                     <div class="cont-main">
@@ -218,36 +218,6 @@ div{
         {% endfor %}
 {% endfor %}
 </div>
-
-
-
-
-
-
-
-
-<div class="cont-bg">
-{% for log in result_log %}
-        {% for k,v in log.items %}
-                <h3>{{k}}</h3>
-                    <div class="cont-main">
-                        {% for item,thumb,url in v %}
-                            <div class="cont-checkbox">
-                                <input name="user_webtoon_list" id="{{item}}"/>
-                                      <label for="{{item}}">
-                                            <p><a target="_blank" href="{{url}}"><img src="{% static 'thumbnails/'|add:thumb|add:'.jpg' %}"></a></p>
-                                            <div class="info">
-                                                <a href="{{url}}" target="_blank" > {{item}}</a>
-                                            </div>
-                                      </label>
-                            </div>
-                        {% endfor %}
-                    </div>
-            <br><br>
-        {% endfor %}
-{% endfor %}
-</div>
-
 
 
 <body>
