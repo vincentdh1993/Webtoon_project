@@ -671,14 +671,29 @@ def ver4(request):
         print(type(combined_list[0]))
 
         test = [
-
             {'재밌게본 스토리 장르의 지금 이 순간 마법처럼 만큼 재밌는 작품!': [("아는사람 이야기", "아는사람 이야기", "url"), ("스튜디오 짭쪼롬", "스튜디오 짭쪼롬", "url2")]},
             {'재밌게본 에피소드 장르의 오늘 밤은 어둠이 무서워요 만큼 재밌는 작품!': [('낢이 사는 이야기', '낢이 사는 이야기', 'url3')]},
             {'재밌게본 옴니버스 장르의 나는 어디에 있는 거니 만큼 재밌는 작품!': [('한 살이라도 어릴 때', '한 살이라도 어릴 때', 'url4')]},
-
         ]
+
+        test = [
+            [("아는사람 이야기", "아는사람 이야기", "url"),("스튜디오 짭쪼롬", "스튜디오 짭쪼롬", "url2")],
+            [('낢이 사는 이야기', '낢이 사는 이야기', 'url3')],
+            [('한 살이라도 어릴 때', '한 살이라도 어릴 때', 'url4')]
+        ]
+        
+        test2 = [
+                    [
+                        [("지금 이 순간","스토리")],
+                        [("아는사람 이야기", "아는사람 이야기", "url"),
+                         ("스튜디오 짭쪼롬", "스튜디오 짭쪼롬", "url2")]
+                    ],
+                 [[("오늘 밤은 어둠이 무서워요","에피소드")],[('낢이 사는 이야기', '낢이 사는 이야기', 'url3')]],
+                 [[("나는 어디에 있는 거니","옴니버스")],[('한 살이라도 어릴 때', '한 살이라도 어릴 때', 'url4')]]
+                ]
+
         return render(request, 'webtoonBot/ver4_result.html',
-                      {'test':test,'result_log':result_log,'new_item_list2':new_item_list,'final_list': final_list,'new_item_list':new_item_list,'combined_list':combined_list})
+                      {'test2':test2,'test':test,'result_log':result_log,'new_item_list2':new_item_list,'final_list': final_list,'new_item_list':new_item_list,'combined_list':combined_list})
     else:
         return render(request, 'webtoonBot/ver4.html', {'webtoon_list': webtoon_list,'thumbnail_list':thumbnail_list})
 

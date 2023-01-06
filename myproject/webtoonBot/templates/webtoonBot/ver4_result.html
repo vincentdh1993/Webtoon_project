@@ -156,7 +156,23 @@ div{
   cursor: pointer;
 }
 
+.greenText
+{
+    font-size: 25px;
+    color:#00c73c;
+    font-weight:bold;
+}
 
+.blackText
+{
+    color:black;
+}
+
+.genreText
+{
+    font-size: 20px;
+    color:black;
+}
 
 </style>
 
@@ -181,11 +197,39 @@ div{
     <h4>총 {{combined_list|length}}개의 웹툰이 추천되었습니다 :)</h4>
 <br><br>
 
+<div class="cont-bg">
+{% for x in test2 %}
+        {% for a,b in x.0 %}
+                <h3><span class="greenText">'{{a}}'</span>&nbsp;<span class="blackText">만큼 재밌는 웹툰</span>&nbsp;<span class="genreText">(장르: {{b}})</span></h3>
+                    <div class="cont-main">
+                        {% for item,thumb,url in x.1 %}
+                            <div class="cont-checkbox">
+                                <input name="user_webtoon_list" id="{{item}}"/>
+                                      <label for="{{item}}">
+                                            <p><a target="_blank" href="{{url}}"><img src="{% static 'thumbnails/'|add:thumb|add:'.jpg' %}"></a></p>
+                                            <div class="info">
+                                                <a href="{{url}}" target="_blank" > {{item}}</a>
+                                            </div>
+                                      </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+            <br><br>
+        {% endfor %}
+{% endfor %}
+</div>
+
+
+
+
+
+
+
 
 <div class="cont-bg">
 {% for log in result_log %}
         {% for k,v in log.items %}
-                <h3 style="pointer-events:none; !important">{{k}}</h3>
+                <h3>{{k}}</h3>
                     <div class="cont-main">
                         {% for item,thumb,url in v %}
                             <div class="cont-checkbox">
