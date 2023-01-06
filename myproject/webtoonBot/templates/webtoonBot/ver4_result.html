@@ -130,7 +130,6 @@ div{
     }
 
 #submit_good {
-  width: 100%
   border: none;
   color: white;
   padding: 16px 32px;
@@ -220,11 +219,11 @@ div{
 <div class="cont-main">
      <form method="post">
         {% csrf_token %}
-        <input class="btn btn-success" name="submit_good" id="submit_good" type="submit" value="대만족 :)" onclick="thanks()"/>
+        <input class="btn btn-success" name="submit_good" id="submit_good" type="submit" value="Good" onclick="thanks()"/>
     </form>
     <form method="post">
         {% csrf_token %}
-        <input class="btn btn-danger" name="submit_bad" id="submit_bad" type="submit" value="불만족 :(" onclick="sorry()"/>
+        <input class="btn btn-danger" name="submit_bad" id="submit_bad" type="submit" value="Bad " onclick="sorry()"/>
     </form>
 </div>
 </body>
