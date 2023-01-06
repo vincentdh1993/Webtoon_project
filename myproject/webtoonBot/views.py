@@ -249,7 +249,7 @@ def RecVae_get_recomendation(new_user_name, new_item_list,recvae_config,model3):
     new_df = pd.DataFrame()
     new_df['user'] = [new_user_name for i in range(len(new_item_list))]
     new_df['title'] = new_item_list
-    new_df.to_csv("new_user_df.csv", encoding="euc-kr")
+    # new_df.to_csv("new_user_df.csv", encoding="euc-kr")
     og_df = pd.read_csv("user_rating_10.csv", encoding="euc-kr")
     frames = [og_df, new_df]
     result_df = pd.concat(frames)
