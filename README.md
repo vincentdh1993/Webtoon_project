@@ -2,35 +2,12 @@
 
 ![Nwebtoon](https://user-images.githubusercontent.com/17634399/211155655-13b02318-0a1d-4463-8eee-bb5f4bc8503f.gif)
 
-
-웹툰 추천 시스템
-
-1. 프로젝트 개요
-
-2. 데이터 수집
-  - 왓챠피디아
-  - 네이버웹툰 사이트 크롤링
-
-3. 추천시스템 모델 개발
-  - RecVae
-  - EASE
-  - Multi-VAE
-  - Ensemble (Hard Voting)
-
-4. 장고
-  - 구현과정
-
-5. To-Do
-
-# 네이버 웹툰 추천 시스템
-
-
-# 데이터 수집
+# 1. 데이터 수집 (Python)
 1. 왓챠 피디아 - 
 
 2. 제이버 웹툰 - 
 
-# 추천시스템 모델 개발
+# 2. 추천시스템 모델 개발 (Pytorch)
 1. RecVae
   - RecVae
 2. EASE
@@ -40,3 +17,10 @@
 4. Ensemble (Hard Voting)
   - Ensemble
 
+# 3. 웹페이지 개발 (Django)
+1. 페이지 기획
+
+2. 구현
+
+# 4. 배치프로세싱 (AirFlow)
+1. AirFlow 구현
