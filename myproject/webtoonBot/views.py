@@ -434,7 +434,7 @@ def ver3(request):
     thumbnail_list = list(og_list['thumbnail'].unique())
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    print(device)
+    # print(device)
     model3 = torch.load("recVae_model_test.pt",map_location=torch.device('cpu'))
     item_encoder = getCoder("item_encoder")
     item_decoder = getCoder("item_decoder")
@@ -598,7 +598,7 @@ def ver4(request):
 
     thumb_names = [sub.replace('?', '') for sub in webtoon_list]
     thumb_names = [sub.replace(':', '') for sub in thumb_names]
-    print(len(webtoon_list),len(first_letter))
+    # print(len(webtoon_list),len(first_letter))
     webtoon_list = [list(a) for a in zip(webtoon_list, thumb_names,first_letter)]
 
     item_encoder = getCoder("item_encoder")
@@ -624,14 +624,14 @@ def ver4(request):
 
         elif 'submit_bad' in request.POST:
             print("submit_bad")
-            print(new_item_list, "@@")
-            print(new_user_name)
+            # print(new_item_list, "@@")
+            # print(new_user_name)
             return render(request, 'webtoonBot/ver4.html',
                           {'webtoon_list': webtoon_list, 'thumbnail_list': thumbnail_list})
 
 
         elif 'back' in request.POST:
-            print("going back")
+            # print("going back")
             return render(request, 'webtoonBot/ver4.html',
                           {'webtoon_list': webtoon_list, 'thumbnail_list': thumbnail_list})
         else:
@@ -671,7 +671,7 @@ def ver4(request):
             description_list.append(desc)
             genre_list.append(genre)
         combined_list = list(zip(final_list,actual_url,thumb_names,description_list,genre_list))
-        print(type(combined_list[0]))
+        # print(type(combined_list[0]))
 
         test = [
             {'재밌게본 스토리 장르의 지금 이 순간 마법처럼 만큼 재밌는 작품!': [("아는사람 이야기", "아는사람 이야기", "url"), ("스튜디오 짭쪼롬", "스튜디오 짭쪼롬", "url2")]},
@@ -694,8 +694,8 @@ def ver4(request):
                  [[("오늘 밤은 어둠이 무서워요","에피소드")],[('낢이 사는 이야기', '낢이 사는 이야기', 'url3')]],
                  [[("나는 어디에 있는 거니","옴니버스")],[('한 살이라도 어릴 때', '한 살이라도 어릴 때', 'url4')]]
                 ]
-        print("@@")
-        print(result_log)
+        # print("@@")
+        # print(result_log)
 
         return render(request, 'webtoonBot/ver4_result.html',
                       {'test2':test2,'test':test,'result_log':result_log,'new_item_list2':new_item_list,'final_list': final_list,'new_item_list':new_item_list,'combined_list':combined_list})
