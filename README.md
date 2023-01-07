@@ -21,3 +21,22 @@
   - 구현과정
 
 5. To-Do
+
+# 네이버 웹툰 추천 시스템
+
+
+# 데이터 수집
+1. 왓챠 피디아 - 
+
+2. 제이버 웹툰 - 
+
+# 추천시스템 모델 개발
+1. RecVae
+  - RecVae
+2. EASE
+  - Ease
+3. Multi-Vae
+  - Multi-Vae
+4. Ensemble (Hard Voting)
+  - Ensemble
+
