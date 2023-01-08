@@ -589,9 +589,13 @@ def ver4(request):
     global flag
     flag = 0
     og_list = pd.read_csv("user_rating_10.csv", encoding="euc-kr")
+    og_list=og_list.sort_values('title')
+
     webtoon_list = list(og_list['title'].unique())
     thumbnail_list = list(og_list['thumbnail'].unique())
     first_letter = getFirstLetter(getCoder("first_letter"),webtoon_list)
+
+
     actual_url_df = pd.read_csv("actual_NW_url_with_thumb_desc_genre.csv",encoding="cp949")
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     model3 = torch.load("recVae_model_test.pt",map_location=torch.device('cpu'))
