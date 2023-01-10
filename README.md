@@ -22,5 +22,5 @@
 
 2. 구현
 
-# 4. 배치프로세싱 (AirFlow)
+# 4. 배치 프로세싱 (AirFlow)
 1. AirFlow 구현
