@@ -197,9 +197,8 @@
     }
 
     #myBtn2 {
-      display: none;
       position: fixed;
-      bottom: 100px;
+      top: 330px;
       right: 10px;
       z-index: 99;
       font-size: 15px;
@@ -252,7 +251,17 @@
     #hello {
       pointer-events: none;
     }
+
+    a:link {
+      color:#00c73c;
+    }
+
+    a:visited {
+      color:#00c73c;
+    }
+
   </style>
+
 
   <script>
 
@@ -261,8 +270,10 @@
       document.getElementById('loadingGif').style.display = "none";
       document.getElementById('submit').src = "{% static 'img/load.gif' %}";
       document.getElementById('cont-bg').style.filter = "blur(2px)";
+      document.getElementById('myBtn2').style.filter = "blur(2px)";
       document.getElementById('cont-bg').style.pointerEvents = "none";
       document.getElementById('submit').style.pointerEvents = "none";
+      document.getElementById('myBtn2').style.pointerEvents = "none";
 
       setTimeout(function () {
         document.getElementById('loadingGif').style.display = "none";
@@ -284,7 +295,7 @@
         document.getElementById("myBtn2").style.display = "block";
       } else {
         document.getElementById("myBtn").style.display = "none";
-        document.getElementById("myBtn2").style.display = "none";
+
       }
     }
 
