@@ -212,7 +212,6 @@ div{
                     <div class="cont-main">
                         {% for item,thumb,url in x.1 %}
                             <div class="cont-checkbox">
-                                <p><a target="_blank" href="{{url}}"></a></p>
                                 <input name="user_webtoon_list" id="{{item}}"/>
                                       <label for="{{item}}">
                                             <p><a target="_blank" href="{{url}}"><img src="{% static 'thumbnails/'|add:thumb|add:'.jpg' %}"></a></p>
@@ -223,8 +222,6 @@ div{
                             </div>
                         {% endfor %}
                     </div>
-
-
             {% else %}
                 {%if a == 0%}
                     <h3><span class="blackText">비슷한 취향의 독자들이 본 다른 웹툰들!</span>
