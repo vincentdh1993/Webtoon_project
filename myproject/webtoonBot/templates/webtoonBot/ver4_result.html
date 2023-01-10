@@ -212,6 +212,7 @@ div{
                     <div class="cont-main">
                         {% for item,thumb,url in x.1 %}
                             <div class="cont-checkbox">
+                                <p><a target="_blank" href="{{url}}"></a></p>
                                 <input name="user_webtoon_list" id="{{item}}"/>
                                       <label for="{{item}}">
                                             <p><a target="_blank" href="{{url}}"><img src="{% static 'thumbnails/'|add:thumb|add:'.jpg' %}"></a></p>
