@@ -30,9 +30,6 @@ import warnings
 # warnings.filterwarnings(action='ignore')
 torch.set_printoptions(sci_mode=True)
 
-print()
-
-
 class EASE():
     def __init__(self, X, reg):
         self.X = self._convert_sp_mat_to_sp_tensor(X)
@@ -207,6 +204,27 @@ def recvae_predict(model, data_loader, user_train, user_valid, make_matrix_data_
             mat = make_matrix_data_set.make_matrix(users, user_train, user_valid, train=False)
             mat = mat.to(device)
             recon_mat = model(mat, calculate_loss=False)
+            recon_mat = recon_mat.softmax(dim=1)
+            recon_mat[mat == 1] = -1.
+            rec_list = recon_mat.argsort(dim=1)
+
+            for user, rec in zip(users, rec_list):
+                up = rec[-10:].cpu().numpy().tolist()
+                user2rec_list[user.item()] = up
+
+    return user2rec_list
+
+
+def multivae_predict(model, data_loader, user_train, user_valid, make_matrix_data_set,device):
+    model.eval()
+
+    user2rec_list = {}
+    with torch.no_grad():
+        for users in data_loader:
+            mat = make_matrix_data_set.make_matrix(users,user_train,user_valid, train=False)
+            mat = mat.to(device)
+
+            recon_mat, mu, logvar = model(mat)
             recon_mat = recon_mat.softmax(dim=1)
             recon_mat[mat == 1] = -1.
             rec_list = recon_mat.argsort(dim=1)
@@ -404,32 +422,33 @@ def EASE_get_recomendation(new_user_name,new_item_list,EASE_config):
   return final_list
 
 
-def multiVAE_get_recommendation(new_user_name, new_item_list, model):
+def multiVAE_get_recommendation(new_user_name, new_item_list, multiVae_config,model):
     new_df = pd.DataFrame()
     new_df['user'] = [new_user_name for i in range(len(new_item_list))]
     new_df['title'] = new_item_list
-    og_df = pd.read_csv("/content/drive/MyDrive/NaverWebtoon/data/user_rating_10.csv", encoding="euc-kr")
+    og_df = pd.read_csv("user_rating_10.csv", encoding="euc-kr")
     frames = [og_df, new_df]
     result_df = pd.concat(frames)
 
-    make_matrix_data_set = MakeMatrixDataSet(config=config, df=result_df)
+    make_matrix_data_set = MakeMatrixDataSet(config=multiVae_config, df=result_df)
     user_train, user_valid = make_matrix_data_set.get_train_valid_data()
     ae_dataset = AEDataSet(num_user=make_matrix_data_set.num_user, )
 
     submission_data_loader = DataLoader(
         ae_dataset,
-        batch_size=config.batch_size,
+        batch_size=multiVae_config.batch_size,
         shuffle=False,
         pin_memory=True,
-        num_workers=config.num_workers,
+        num_workers=multiVae_config.num_workers,
     )
 
-    user2rec_list = predict(
+    user2rec_list = multivae_predict(
         model=model,
         data_loader=submission_data_loader,
         user_train=user_train,
         user_valid=user_valid,
-        make_matrix_data_set=make_matrix_data_set
+        make_matrix_data_set=make_matrix_data_set,
+        device='cuda' if torch.cuda.is_available() else 'cpu'
     )
 
     item_list = []
@@ -455,29 +474,40 @@ def getFinalList(recvae_list,ease_list,multivae_list):
       d[e] +=1
     else:
       d[e] = 1
+
+    if m in d:
+      d[m] +=1
+    else:
+      d[m] = 1
+
   total_list = []
   for i in d:
     total_list.append([i,d[i]])
   total_list = sorted(total_list,key=lambda x:x[1],reverse=True)
 
+  three_votes=[]
   two_votes=[]
   one_vote=[]
 
   for i in total_list:
     if i[1] == 2:
       two_votes.append(i[0])
+    elif i[1] == 3:
+      three_votes.append(i[0])
     else:
       one_vote.append(i[0])
 
   total_list = [i[0] for i in total_list]
   # print(total_list)
   print("총 "+str(len(total_list))+"개의 웹툰이 추천되었습니다 :)")
+  for i in three_votes:
+    print(i,3)
   for i in two_votes:
-    print(i)
+    print(i,2)
   for i in one_vote:
-    print(i)
+    print(i,1)
 
-  return two_votes+one_vote
+  return three_votes+two_votes+one_vote
 
 def index(request):
     return render(request, 'webtoonBot/index.html')
@@ -609,6 +639,7 @@ new_user_name=""
 flag = 0
 
 
+
 def ver4(request):
     global new_item_list
     global new_user_name
@@ -625,9 +656,7 @@ def ver4(request):
     actual_url_df = pd.read_csv("actual_NW_url_with_thumb_desc_genre.csv",encoding="cp949")
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     recVae_model = torch.load("recVae_model_test.pt",map_location=torch.device('cpu'))
-    print(recVae_model,"$$$$$$$$")
-    # multiVae_model = torch.load("multi_VAE_test.pt")
-    # print(multiVae_model,"$$$$$$$$")
+    multiVae_model = torch.load("multi_VAE_test.pt",map_location=torch.device('cpu'))
 
     thumb_names = [sub.replace('?', '') for sub in webtoon_list]
     thumb_names = [sub.replace(':', '') for sub in thumb_names]
@@ -680,7 +709,7 @@ def ver4(request):
         recvae_config, EASE_config, multiVae_config = getConfig(new_item_list)
         recvae_list = RecVae_get_recomendation(new_user_name, new_item_list, recvae_config, recVae_model)
         ease_list = EASE_get_recomendation(new_user_name, new_item_list, EASE_config)
-        multiVAE_list = multiVAE_get_recommendation(new_user_name, new_item_list, multiVae_model)
+        multiVAE_list = multiVAE_get_recommendation(new_user_name, new_item_list, multiVae_config, multiVae_model)
         print(multiVAE_list,"@@@")
         final_list = getFinalList(recvae_list, ease_list,multiVAE_list)
         result_log = getResult_log(new_item_list, final_list)
