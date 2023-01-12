@@ -308,24 +308,34 @@ def RecVae_get_recomendation(new_user_name, new_item_list,recvae_config,model3):
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
     )
 
-    submission_new = []
+    item_list = []
     users = [i for i in range(0, make_matrix_data_set_new.num_user)]
-    users = users[-1:]
-    for user in users:
-        rec_item_list = user2rec_list2[user]
-        for item in rec_item_list:
-            submission_new.append(
-                {
-                    'user': make_matrix_data_set_new.user_decoder[user],
-                    'item': make_matrix_data_set_new.item_decoder[item],
-                }
-            )
-    submission_new = pd.DataFrame(submission_new)
-    final = toFinalForm(submission_new)
-    final_list = (final['item'][0])
-    # for i in final_list:
-    # print(i)
-    return final_list
+
+    final_result = (user2rec_list2[users[-1]])
+    for item in final_result:
+        item_list.append(make_matrix_data_set_new.item_decoder[item])
+
+    return item_list
+
+
+    # submission_new = []
+    # users = [i for i in range(0, make_matrix_data_set_new.num_user)]
+    # users = users[-1:]
+    # for user in users:
+    #     rec_item_list = user2rec_list2[user]
+    #     for item in rec_item_list:
+    #         submission_new.append(
+    #             {
+    #                 'user': make_matrix_data_set_new.user_decoder[user],
+    #                 'item': make_matrix_data_set_new.item_decoder[item],
+    #             }
+    #         )
+    # submission_new = pd.DataFrame(submission_new)
+    # final = toFinalForm(submission_new)
+    # final_list = (final['item'][0])
+    # # for i in final_list:
+    # # print(i)
+    # return final_list
 
 def get_ndcg(pred_list, true_list):
     idcg = sum((1 / np.log2(rank + 2) for rank in range(1, len(pred_list))))
