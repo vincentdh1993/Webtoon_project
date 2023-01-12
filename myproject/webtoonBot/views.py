@@ -498,7 +498,6 @@ def getFinalList(recvae_list,ease_list,multivae_list):
       one_vote.append(i[0])
 
   total_list = [i[0] for i in total_list]
-  # print(total_list)
   print("총 "+str(len(total_list))+"개의 웹툰이 추천되었습니다 :)")
   for i in three_votes:
     print(i,3)
