@@ -1,0 +1,278 @@
+{% load static %}
+<head>
+<!--    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">-->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<!--    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap-theme.min.css" integrity="sha384-6pzBo3FDv/PJ8r2KRkGHifhEocL+1X2rVCTTkUfGk7/0pbek5mMa1upzvWbrUbOZ" crossorigin="anonymous">-->
+<!--    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap-theme.min.css">-->
+<!--    <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>-->
+<!--    <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>-->
+    <script src="ver4.js" type="text/javascrip"></script>
+    <script src="/static/js/ver4.js" type="text/javascrip"></script>
+<!--    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link href='http://www.openhiun.com/hangul/nanumbarungothic.css' rel='stylesheet' type='text/css'>
+    <style>
+    @import url(http://www.openhiun.com/hangul/nanumbarungothic.css);
+* {
+  font-family: 'Nanum Barun Gothic', sans-serif;
+  margin: 0;
+  padding: 0;
+  --transition: 0.15s;
+  --border-radius: 0.5rem;
+  --background: #00C73C;
+  --box-shadow: #00C73C;
+}
+
+.cont-bg {
+    font-family: 'Nanum Barun Gothic', sans-serif;
+  min-height: 10vh;
+  background-image: radial-gradient(
+    circle farthest-corner at 7.2% 13.6%,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.cont-title {
+  color: white;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.cont-main {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+}
+
+.cont-checkbox {
+  width: 150px;
+  height: 100px;
+  border-radius: var(--border-radius);
+  /* box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); */
+  box-shadow: 0px 0px 0px 2.5px #00c73c;
+  background: white;
+  transition: transform var(--transition);
+  margin-top: 5px;
+  margin-right: 5px;
+  margin-left: 5px;
+  margin-bottom: 5px;
+}
+
+.cont-checkbox:first-of-type {
+  margin-bottom: 0.75rem;
+  margin-right: 0.75rem;
+}
+
+.cont-checkbox:active {
+  transform: scale(0.9);
+}
+
+input {
+  font-family: 'Nanum Barun Gothic', sans-serif;
+  display: none;
+}
+
+input:checked + label {
+  opacity: 1;
+  box-shadow: 0 0 0 3px var(--background);
+}
+
+input:checked + label img {
+  -webkit-filter: none; /* Safari 6.0 - 9.0 */
+  filter: none;
+}
+
+input:checked + label .cover-checkbox {
+  opacity: 1;
+  transform: scale(1);
+}
+
+input:checked + label .cover-checkbox svg {
+  stroke-dashoffset: 0;
+}
+
+label {
+  display: inline-block;
+  cursor: pointer;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  opacity: 0.8;
+}
+
+label img {
+  width: 100%;
+  height: 70%;
+  object-fit: cover;
+  clip-path: polygon(0% 0%, 100% 0, 100% 100%, 50% 100%, 0 100%);
+  -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
+  filter: grayscale(0%);
+}
+
+
+label .info {
+  font-family: 'Nanum Barun Gothic', sans-serif;
+  text-align: center;
+  margin-top: 0.7rem;
+  font-weight: 600;
+  font-size: 1rem;
+  color:#00c73c;
+}
+
+div{
+    text-align: center;
+    }
+
+#submit_good {
+  border: none;
+  color: white;
+  padding: 16px 32px;
+  text-decoration: none;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+#submit_bad {
+  border: none;
+  color: white;
+  padding: 16px 32px;
+  text-decoration: none;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+#back {
+  border: none;
+  color: white;
+  padding: 16px 32px;
+  text-decoration: none;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+.greenText
+{
+    font-size: 25px;
+    color:#00c73c;
+    font-weight:bold;
+}
+
+.blackText
+{
+    color:black;
+}
+
+.genreText
+{
+    font-size: 20px;
+    color:black;
+}
+
+#contact {
+  text-align: center;
+  color: #a1a1a1;
+}
+
+
+</style>
+
+<script>
+    function thanks() {
+       alert("사용해 주셔서 감사합니다 :) ");
+       return true;
+    }
+
+    function sorry() {
+       alert("더 좋은 추천을 위해 노력하겠습니다 :) ");
+       return true;
+    }
+</script>
+
+
+<meta charset="UTF-8">
+    <title>웹툰 추천 봇</title>
+</head>
+<div><img src= "{% static 'img/naver_webtoon_white.jpg' %}"</div>
+    <h2> 🤖네이버 웹툰 추천 결과🤖 </h2>
+    <h4>총 {{combined_list|length}}개의 웹툰이 추천되었습니다 :)</h4>
+<br><br>
+
+<div class="cont-bg">
+{% for x in result_log %}
+        {% for a,b in x.0 %}
+            {%if a == 1%}
+                <h3><span class="blackText">웹툰을 처음 보는 당신을 위한 추천작품들!</span></h3>
+                    <div class="cont-main">
+                        {% for item,thumb,url in x.1 %}
+                            <div class="cont-checkbox">
+                                <input name="user_webtoon_list" id="{{item}}"/>
+                                      <label for="{{item}}">
+                                            <p><a target="_blank" href="{{url}}"><img src="{% static 'thumbnails/'|add:thumb|add:'.jpg' %}"></a></p>
+                                            <div class="info">
+                                                <a href="{{url}}" target="_blank" > {{item}}</a>
+                                            </div>
+                                      </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+            {% else %}
+                {%if a == 0%}
+                    <h3><span class="blackText">비슷한 취향의 독자들이 본 다른 웹툰들!</span>
+                {% else %}
+                    <h3><span class="greenText">'{{a}}'</span>&nbsp;<span class="blackText">만큼 재밌는 웹툰</span>&nbsp;<span class="genreText">(장르: {{b}})</span></h3>
+                {% endif %}
+
+                    <div class="cont-main">
+                        {% for item,thumb,url in x.1 %}
+                            <div class="cont-checkbox">
+                                <input name="user_webtoon_list" id="{{item}}"/>
+                                      <label for="{{item}}">
+                                            <p><a target="_blank" href="{{url}}"><img src="{% static 'thumbnails/'|add:thumb|add:'.jpg' %}"></a></p>
+                                            <div class="info">
+                                                <a href="{{url}}" target="_blank" > {{item}}</a>
+                                            </div>
+                                      </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+            {% endif %}
+            <br><br>
+        {% endfor %}
+{% endfor %}
+</div>
+
+
+<body>
+<div class="cont-main">
+    <form method="post">
+        {% csrf_token %}
+        <input class="btn btn-success" name="back" id="back" type="submit" value="처음부터 다시하기" />
+    </form>
+</div>
+<br><br>
+
+<h4>추천 결과를 평가해 주세요</h4>
+<div class="cont-main">
+     <form method="post">
+        {% csrf_token %}
+        <input class="btn btn-success" name="submit_good" id="submit_good" type="submit" value="Good" onclick="thanks()"/>
+    </form>
+    <form method="post">
+        {% csrf_token %}
+        <input class="btn btn-danger" name="submit_bad" id="submit_bad" type="submit" value="Bad " onclick="sorry()"/>
+    </form>
+</div>
+<br><br>
+<p id="contact" name="contact">[Contact Info] 이동호: dongho_vincent@naver.com</p>
+</body>

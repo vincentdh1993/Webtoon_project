@@ -509,8 +509,8 @@ def getFinalList(recvae_list,ease_list,multivae_list):
 
   return three_votes+two_votes+one_vote
 
-def index(request):
-    return render(request, 'webtoonBot/index.html')
+def ver4(request):
+    return render(request, 'webtoonBot/ver4.html')
 
 def ver3(request):
     pass
@@ -640,7 +640,7 @@ flag = 0
 
 
 
-def ver4(request):
+def index(request):
     global new_item_list
     global new_user_name
     global flag
@@ -710,7 +710,6 @@ def ver4(request):
         recvae_list = RecVae_get_recomendation(new_user_name, new_item_list, recvae_config, recVae_model)
         ease_list = EASE_get_recomendation(new_user_name, new_item_list, EASE_config)
         multiVAE_list = multiVAE_get_recommendation(new_user_name, new_item_list, multiVae_config, multiVae_model)
-        print(multiVAE_list,"@@@")
         final_list = getFinalList(recvae_list, ease_list,multiVAE_list)
         result_log = getResult_log(new_item_list, final_list)
         actual_url=[]
@@ -761,10 +760,10 @@ def ver4(request):
         # print("@@")
         # print(result_log)
 
-        return render(request, 'webtoonBot/ver4_result.html',
+        return render(request, 'webtoonBot/index_result.html',
                       {'test2':test2,'test':test,'result_log':result_log,'new_item_list2':new_item_list,'final_list': final_list,'new_item_list':new_item_list,'combined_list':combined_list})
     else:
-        return render(request, 'webtoonBot/ver4.html', {'webtoon_list': webtoon_list,'thumbnail_list':thumbnail_list})
+        return render(request, 'webtoonBot/index.html', {'webtoon_list': webtoon_list,'thumbnail_list':thumbnail_list})
 
 def ver1(request):
     return render(request, 'webtoonBot/ver1.html')
