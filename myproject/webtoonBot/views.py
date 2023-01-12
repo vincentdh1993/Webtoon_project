@@ -24,10 +24,14 @@ import ast
 # import AEDataSet
 # import EASE
 
+
 import warnings
 
 # warnings.filterwarnings(action='ignore')
 torch.set_printoptions(sci_mode=True)
+
+print()
+
 
 class EASE():
     def __init__(self, X, reg):
@@ -241,7 +245,18 @@ def getConfig(new_item_list):
   }
 
   EASE_config = Box(EASE_config)
-  return recvae_config,EASE_config
+
+  multiVae_config = {
+
+      'valid_samples': valid_samples,
+      'seed': 22,
+      'batch_size': 500,
+      'num_workers': 2,
+  }
+
+  multiVae_config = Box(multiVae_config)
+
+  return recvae_config,EASE_config,multiVae_config
 
 
 def RecVae_get_recomendation(new_user_name, new_item_list,recvae_config,model3):
@@ -388,11 +403,50 @@ def EASE_get_recomendation(new_user_name,new_item_list,EASE_config):
   #   print(i)
   return final_list
 
-def getFinalList(recvae_list,ease_list):
+
+def multiVAE_get_recommendation(new_user_name, new_item_list, model):
+    new_df = pd.DataFrame()
+    new_df['user'] = [new_user_name for i in range(len(new_item_list))]
+    new_df['title'] = new_item_list
+    og_df = pd.read_csv("/content/drive/MyDrive/NaverWebtoon/data/user_rating_10.csv", encoding="euc-kr")
+    frames = [og_df, new_df]
+    result_df = pd.concat(frames)
+
+    make_matrix_data_set = MakeMatrixDataSet(config=config, df=result_df)
+    user_train, user_valid = make_matrix_data_set.get_train_valid_data()
+    ae_dataset = AEDataSet(num_user=make_matrix_data_set.num_user, )
+
+    submission_data_loader = DataLoader(
+        ae_dataset,
+        batch_size=config.batch_size,
+        shuffle=False,
+        pin_memory=True,
+        num_workers=config.num_workers,
+    )
+
+    user2rec_list = predict(
+        model=model,
+        data_loader=submission_data_loader,
+        user_train=user_train,
+        user_valid=user_valid,
+        make_matrix_data_set=make_matrix_data_set
+    )
+
+    item_list = []
+    users = [i for i in range(0, make_matrix_data_set.num_user)]
+
+    final_result = (user2rec_list[users[-1]])
+    for item in final_result:
+        item_list.append(make_matrix_data_set.item_decoder[item])
+
+    return item_list
+
+def getFinalList(recvae_list,ease_list,multivae_list):
   d={}
   for i in range(len(recvae_list)):
     r = recvae_list[i]
     e = ease_list[i]
+    m = multivae_list[i]
     if r in d:
       d[r] +=1
     else:
@@ -429,35 +483,7 @@ def index(request):
     return render(request, 'webtoonBot/index.html')
 
 def ver3(request):
-    og_list = pd.read_csv("user_rating_10.csv", encoding="euc-kr")
-    webtoon_list = list(og_list['title'].unique())
-    thumbnail_list = list(og_list['thumbnail'].unique())
-
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    # print(device)
-    model3 = torch.load("recVae_model_test.pt",map_location=torch.device('cpu'))
-    item_encoder = getCoder("item_encoder")
-    item_decoder = getCoder("item_decoder")
-    user_encoder = getCoder("user_encoder")
-    user_decoder = getCoder("user_decoder")
-
-    new_item_list = []
-    if request.method == 'POST':
-        new_item_list = request.POST.getlist('user_webtoon_list')
-        new_user_name = "vincenzodh"
-        print(new_item_list,"$")
-
-        recvae_config, EASE_config = getConfig(new_item_list)
-        recvae_list = RecVae_get_recomendation(new_user_name, new_item_list, recvae_config, model3)
-        ease_list = EASE_get_recomendation(new_user_name, new_item_list, EASE_config)
-        final_list = getFinalList(recvae_list, ease_list)
-
-
-        return render(request, 'webtoonBot/ver3_result.html',
-                      {'final_list': final_list})
-    else:
-        return render(request, 'webtoonBot/ver3.html', {'webtoon_list': webtoon_list,'thumbnail_list':thumbnail_list})
-
+    pass
 def connection():
     try:
         con = sqlite3.connect('db.sqlite3')
@@ -598,7 +624,10 @@ def ver4(request):
 
     actual_url_df = pd.read_csv("actual_NW_url_with_thumb_desc_genre.csv",encoding="cp949")
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    model3 = torch.load("recVae_model_test.pt",map_location=torch.device('cpu'))
+    recVae_model = torch.load("recVae_model_test.pt",map_location=torch.device('cpu'))
+    print(recVae_model,"$$$$$$$$")
+    # multiVae_model = torch.load("multi_VAE_test.pt")
+    # print(multiVae_model,"$$$$$$$$")
 
     thumb_names = [sub.replace('?', '') for sub in webtoon_list]
     thumb_names = [sub.replace(':', '') for sub in thumb_names]
@@ -648,10 +677,12 @@ def ver4(request):
         new_log_time_list = [datetime.now() for i in range(len(new_item_list))]
         print(new_item_list,"$")
 
-        recvae_config, EASE_config = getConfig(new_item_list)
-        recvae_list = RecVae_get_recomendation(new_user_name, new_item_list, recvae_config, model3)
+        recvae_config, EASE_config, multiVae_config = getConfig(new_item_list)
+        recvae_list = RecVae_get_recomendation(new_user_name, new_item_list, recvae_config, recVae_model)
         ease_list = EASE_get_recomendation(new_user_name, new_item_list, EASE_config)
-        final_list = getFinalList(recvae_list, ease_list)
+        multiVAE_list = multiVAE_get_recommendation(new_user_name, new_item_list, multiVae_model)
+        print(multiVAE_list,"@@@")
+        final_list = getFinalList(recvae_list, ease_list,multiVAE_list)
         result_log = getResult_log(new_item_list, final_list)
         actual_url=[]
         description_list = []
@@ -710,35 +741,7 @@ def ver1(request):
     return render(request, 'webtoonBot/ver1.html')
 
 def ver2(request):
-    webtoon_list = pd.read_csv("user_rating_10.csv",encoding="euc-kr")
-    webtoon_list = list(webtoon_list['title'].unique())
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    print(device)
-    model3 = torch.load("recVae_model_test.pt",
-                        map_location=torch.device('cpu'))
-    item_encoder = getCoder("item_encoder")
-    item_decoder = getCoder("item_decoder")
-    user_encoder = getCoder("user_encoder")
-    user_decoder = getCoder("user_decoder")
-
-
-    if request.method == 'POST':
-        new_user_name = "vincenzodh"
-        new_item_list = ["헬퍼", "두근두근두근거려", "목욕의 신", "병의 맛", "삼봉이발소", "스퍼맨 시즌1", "안나라수마나라", "호랑이형님", "입시명문사립 정글고등학교",
-                         "무한동력"]
-        new_item_list = []
-        for i in range(1,6):
-            new_item_list.append(request.POST.get('beer' + str(i), ''))
-        print(new_item_list,"@#@#@#@@#@")
-        recvae_config, EASE_config = getConfig(new_item_list)
-
-        recvae_list = RecVae_get_recomendation(new_user_name, new_item_list,recvae_config,model3)
-        ease_list = EASE_get_recomendation(new_user_name, new_item_list,EASE_config)
-        final_list = getFinalList(recvae_list, ease_list)
-        return render(request, 'webtoonBot/ver2_result.html',
-                      {'final_list': final_list})
-    else:
-        return render(request, 'webtoonBot/ver2.html', {'webtoon_list': webtoon_list})
+    pass
 
 def getCoder(coder_name):
   filename = str(coder_name)+".txt"
