@@ -125,7 +125,7 @@ USE_TZ = True
 
 import os
 STATIC_URL = 'static/'
-
+STATIC_ROOT = os.path.join(BASE_DIR, '_static')
 STATIC_DIR = os.path.dirname(BASE_DIR)
 new_dir = str(BASE_DIR)+"\webtoonBot\static"
 STATIC_DIR = str(STATIC_DIR)+"\myproject\webtoonBot\static"

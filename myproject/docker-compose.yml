@@ -6,6 +6,7 @@ services:
       - "80:80"
     volumes:
       - .:/code
+      - static_volume:/usr/src/app/_static
       - ./config/nginx:/etc/nginx.conf.d
     depends_on:
       - web
@@ -16,5 +17,6 @@ services:
     command: gunicorn myproject.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - .:/code
+      - static_volume:/usr/src/app/_static
     expose:
       - "8000"
