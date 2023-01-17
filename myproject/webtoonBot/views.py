@@ -37,7 +37,6 @@ def swish(x):
 class Encoder(nn.Module):
     def __init__(self, hidden_dim, latent_dim, input_dim, eps=1e-1):
         super(Encoder, self).__init__()
-        print("dlkfjdlkfdj")
         self.fc1 = nn.Linear(input_dim, hidden_dim)
         self.ln1 = nn.LayerNorm(hidden_dim, eps=eps)
         self.fc2 = nn.Linear(hidden_dim, hidden_dim)
@@ -103,9 +102,7 @@ class CompositePrior(nn.Module):
 class RecVAE(nn.Module):
     def __init__(self, input_dim, hidden_dim=600, latent_dim=200):
         super(RecVAE, self).__init__()
-        print("@@@")
         self.encoder = Encoder(hidden_dim, latent_dim, input_dim)
-        print("###")
         self.prior = CompositePrior(hidden_dim, latent_dim, input_dim)
         self.decoder = nn.Linear(latent_dim, input_dim)
 
@@ -661,12 +658,12 @@ def multiVAE_get_recommendation(new_user_name, new_item_list, multiVae_config,mo
 
     return item_list
 
-def getFinalList(recvae_list,ease_list,multivae_list):
+def getFinalList(recvae_list,ease_list):
   d={}
   for i in range(len(recvae_list)):
     r = recvae_list[i]
     e = ease_list[i]
-    m = multivae_list[i]
+    # m = multivae_list[i]
     if r in d:
       d[r] +=1
     else:
@@ -676,10 +673,10 @@ def getFinalList(recvae_list,ease_list,multivae_list):
     else:
       d[e] = 1
 
-    if m in d:
-      d[m] +=1
-    else:
-      d[m] = 1
+    # if m in d:
+    #   d[m] +=1
+    # else:
+    #   d[m] = 1
 
   total_list = []
   for i in d:
@@ -857,19 +854,21 @@ def index(request):
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
     #모델 Loading###########################################
-    recVae_model = torch.load("recVae_model_test.pt",map_location=torch.device('cpu'))
-    multiVae_model = torch.load("multi_VAE_test.pt",map_location=torch.device('cpu'))
+    recVae_model = RecVAE(970)
+    recVae_model.load_state_dict(torch.load("RecVae_LSD.pt",
+                                     map_location=torch.device('cpu')))  # state_dict를 불러 온 후, 모델에 저장
+    # multiVae_model = torch.load("multi_VAE_test.pt",map_location=torch.device('cpu'))
 
     thumb_names = [sub.replace('?', '') for sub in webtoon_list]
     thumb_names = [sub.replace(':', '') for sub in thumb_names]
     # print(len(webtoon_list),len(first_letter))
     webtoon_list = [list(a) for a in zip(webtoon_list, thumb_names,first_letter)]
 
-    item_encoder = getCoder("item_encoder")
-    item_decoder = getCoder("item_decoder")
-    user_encoder = getCoder("user_encoder")
-    user_decoder = getCoder("user_decoder")
-    conn= sqlite3.connect('./db.sqlite3')
+    # item_encoder = getCoder("item_encoder")
+    # item_decoder = getCoder("item_decoder")
+    # user_encoder = getCoder("user_encoder")
+    # user_decoder = getCoder("user_decoder")
+    # conn= sqlite3.connect('./db.sqlite3')
 
 
     if request.method == 'POST':
@@ -882,21 +881,18 @@ def index(request):
                 one_data = (new_user_name, new_item_list[i], new_log_time_list[i])
                 insert_one(con, one_data)
 
-            return render(request, 'webtoonBot/ver4.html',
+            return render(request, 'webtoonBot/index.html',
                           {'webtoon_list': webtoon_list, 'thumbnail_list': thumbnail_list})
 
 
         elif 'submit_bad' in request.POST:
             print("submit_bad")
-            # print(new_item_list, "@@")
-            # print(new_user_name)
-            return render(request, 'webtoonBot/ver4.html',
+            return render(request, 'webtoonBot/index.html',
                           {'webtoon_list': webtoon_list, 'thumbnail_list': thumbnail_list})
 
 
         elif 'back' in request.POST:
-            # print("going back")
-            return render(request, 'webtoonBot/ver4.html',
+            return render(request, 'webtoonBot/index.html',
                           {'webtoon_list': webtoon_list, 'thumbnail_list': thumbnail_list})
         else:
             print("none clicked")
@@ -911,8 +907,8 @@ def index(request):
         recvae_config, EASE_config, multiVae_config = getConfig(new_item_list)
         recvae_list = RecVae_get_recomendation(new_user_name, new_item_list, recvae_config, recVae_model)
         ease_list = EASE_get_recomendation(new_user_name, new_item_list, EASE_config)
-        multiVAE_list = multiVAE_get_recommendation(new_user_name, new_item_list, multiVae_config, multiVae_model)
-        final_list = getFinalList(recvae_list, ease_list,multiVAE_list)
+        # multiVAE_list = multiVAE_get_recommendation(new_user_name, new_item_list, multiVae_config, multiVae_model)
+        final_list = getFinalList(recvae_list, ease_list)
         result_log = getResult_log(new_item_list, final_list)
         actual_url=[]
         description_list = []
@@ -936,42 +932,12 @@ def index(request):
             description_list.append(desc)
             genre_list.append(genre)
         combined_list = list(zip(final_list,actual_url,thumb_names,description_list,genre_list))
-        # print(type(combined_list[0]))
 
-        test = [
-            {'재밌게본 스토리 장르의 지금 이 순간 마법처럼 만큼 재밌는 작품!': [("아는사람 이야기", "아는사람 이야기", "url"), ("스튜디오 짭쪼롬", "스튜디오 짭쪼롬", "url2")]},
-            {'재밌게본 에피소드 장르의 오늘 밤은 어둠이 무서워요 만큼 재밌는 작품!': [('낢이 사는 이야기', '낢이 사는 이야기', 'url3')]},
-            {'재밌게본 옴니버스 장르의 나는 어디에 있는 거니 만큼 재밌는 작품!': [('한 살이라도 어릴 때', '한 살이라도 어릴 때', 'url4')]},
-        ]
-
-        test = [
-            [("아는사람 이야기", "아는사람 이야기", "url"),("스튜디오 짭쪼롬", "스튜디오 짭쪼롬", "url2")],
-            [('낢이 사는 이야기', '낢이 사는 이야기', 'url3')],
-            [('한 살이라도 어릴 때', '한 살이라도 어릴 때', 'url4')]
-        ]
-        
-        test2 = [
-                    [
-                        [("지금 이 순간","스토리")],
-                        [("아는사람 이야기", "아는사람 이야기", "url"),
-                         ("스튜디오 짭쪼롬", "스튜디오 짭쪼롬", "url2")]
-                    ],
-                 [[("오늘 밤은 어둠이 무서워요","에피소드")],[('낢이 사는 이야기', '낢이 사는 이야기', 'url3')]],
-                 [[("나는 어디에 있는 거니","옴니버스")],[('한 살이라도 어릴 때', '한 살이라도 어릴 때', 'url4')]]
-                ]
-        # print("@@")
-        # print(result_log)
 
         return render(request, 'webtoonBot/index_result.html',
-                      {'test2':test2,'test':test,'result_log':result_log,'new_item_list2':new_item_list,'final_list': final_list,'new_item_list':new_item_list,'combined_list':combined_list})
+                      {'result_log':result_log,'new_item_list2':new_item_list,'final_list': final_list,'new_item_list':new_item_list,'combined_list':combined_list})
     else:
         return render(request, 'webtoonBot/index.html', {'webtoon_list': webtoon_list,'thumbnail_list':thumbnail_list})
-
-def ver1(request):
-    return render(request, 'webtoonBot/ver1.html')
-
-def ver2(request):
-    pass
 
 def getCoder(coder_name):
   filename = str(coder_name)+".txt"
