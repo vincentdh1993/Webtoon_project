@@ -17,4 +17,4 @@ RUN pip install --upgrade pip
 RUN python --version
 RUN pip install --upgrade pip setuptools wheel
 RUN pip install -r requirements.txt --timeout 10000
-RUN pip install --default-timeout=10000 torch 
+# RUN pip install --default-timeout=10000 torch
