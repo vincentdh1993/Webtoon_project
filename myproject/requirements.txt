@@ -3,6 +3,7 @@ numpy==1.22.3
 pandas==1.4.2
 python_box==6.1.0
 scipy==1.10.0
-torch==1.10.2
+--find-links https://download.pytorch.org/whl/torch_stable.html
+torch==1.12.1+cpu
 tqdm==4.64.1
 gunicorn
