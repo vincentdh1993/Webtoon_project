@@ -1,22 +1,22 @@
-version: '3'
+version : '3'
 services:
   nginx:
-    image: nginx:latest
-    ports:
-      - "80:80"
+    build: ./nginx
     volumes:
-      - .:/code
       - static_volume:/usr/src/app/_static
-      - ./config/nginx:/etc/nginx.conf.d
+    ports:
+      - 80:80
     depends_on:
       - web
   web:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: .
     command: gunicorn myproject.wsgi:application --bind 0.0.0.0:8000
     volumes:
-      - .:/code
       - static_volume:/usr/src/app/_static
+      - ./:/usr/src/app/
     expose:
-      - "8000"
+      - 8000
+    env_file:
+      - ./.env.dev
+volumes:
+  static_volume:
