@@ -20,14 +20,8 @@ from copy import deepcopy
 from datetime import datetime
 import ast
 
-# from MakeMatrixDataSet import MakeMatrixDataSet
-# import AEDataSet
-# import EASE
 
 
-import warnings
-
-# warnings.filterwarnings(action='ignore')
 torch.set_printoptions(sci_mode=True)
 
 def swish(x):
@@ -138,11 +132,12 @@ class RecVAE(nn.Module):
 
 class MultiVAE(nn.Module):
     """
-    Container module for Multi-DAE.
+    Container module for Multi-VAE.
 
     Multi-DAE : Denoising Autoencoder with Multinomial Likelihood
     See Variational Autoencoders for Collaborative Filtering
     https://arxiv.org/abs/1802.05814
+    속도 문제 때문에 현재 사용하지 않고있습니다.
     """
 
     def __init__(self, p_dims, dropout_rate=0.5):
@@ -225,11 +220,7 @@ class EASE():
 
     def _convert_sp_mat_to_sp_tensor(self, X):
         """
-        Convert scipy sparse matrix to PyTorch sparse matrix
-
-        Arguments:
-        ----------
-        X = Adjacency matrix, scipy sparse matrix
+        파이토치 매트릭스
         """
         coo = X.tocoo().astype(np.float32)
         i = torch.LongTensor(np.mat([coo.row, coo.col]))
@@ -240,9 +231,7 @@ class EASE():
 
     def fit(self):
         '''
-
-        진짜 정말 간단한 식으로 모델을 만듬
-
+        웹툰 인코딩을 위한 간단한 EASE 모델입니다.
         '''
         G = self.X.to_dense().t() @ self.X.to_dense()
         diagIndices = torch.eye(G.shape[0]) == 1
@@ -298,9 +287,6 @@ class MakeMatrixDataSet():
     def generate_sequence_data(self):
         """
         sequence_data 생성
-
-        Returns:
-            dict: train user sequence / valid user sequence
         """
         users = defaultdict(list)
         user_train = {}
@@ -360,7 +346,7 @@ class MakeMatrixDataSet():
 
     def make_matrix(self, user_list, user_train, user_valid, train=True):
         """
-        user_item_dict를 바탕으로 행렬 생성
+        사용자_웹툰_dict를 바탕으로 매트릭스 생성
         """
         mat = torch.zeros(size=(user_list.size(0), self.num_item))
         for idx, user in enumerate(user_list):
@@ -472,6 +458,7 @@ def RecVae_get_recomendation(new_user_name, new_item_list,recvae_config,model3):
     new_df['title'] = new_item_list
     # new_df.to_csv("new_user_df.csv", encoding="euc-kr")
     og_df = pd.read_csv("user_rating_10.csv", encoding="euc-kr")
+    print(len(og_df))
     frames = [og_df, new_df]
     result_df = pd.concat(frames)
 
@@ -504,26 +491,6 @@ def RecVae_get_recomendation(new_user_name, new_item_list,recvae_config,model3):
         item_list.append(make_matrix_data_set_new.item_decoder[item])
 
     return item_list
-
-
-    # submission_new = []
-    # users = [i for i in range(0, make_matrix_data_set_new.num_user)]
-    # users = users[-1:]
-    # for user in users:
-    #     rec_item_list = user2rec_list2[user]
-    #     for item in rec_item_list:
-    #         submission_new.append(
-    #             {
-    #                 'user': make_matrix_data_set_new.user_decoder[user],
-    #                 'item': make_matrix_data_set_new.item_decoder[item],
-    #             }
-    #         )
-    # submission_new = pd.DataFrame(submission_new)
-    # final = toFinalForm(submission_new)
-    # final_list = (final['item'][0])
-    # # for i in final_list:
-    # # print(i)
-    # return final_list
 
 def get_ndcg(pred_list, true_list):
     idcg = sum((1 / np.log2(rank + 2) for rank in range(1, len(pred_list))))
@@ -581,6 +548,7 @@ def EASE_get_recomendation(new_user_name,new_item_list,EASE_config):
   new_df['user'] = [new_user_name for i in range(len(new_item_list))]
   new_df['title'] = new_item_list
   og_df = pd.read_csv("user_rating_10.csv",encoding="euc-kr")
+  # print(len(og_df))
   frames = [og_df, new_df]
   result_df = pd.concat(frames)
   make_matrix_data_set = MakeMatrixDataSet(config = EASE_config,df = result_df)
@@ -615,8 +583,6 @@ def EASE_get_recomendation(new_user_name,new_item_list,EASE_config):
   submission = pd.DataFrame(submission)
   final = toFinalForm(submission)
   final_list = (final['item'][0])
-  # for i in final_list:
-  #   print(i)
   return final_list
 
 
@@ -706,11 +672,6 @@ def getFinalList(recvae_list,ease_list):
 
   return three_votes+two_votes+one_vote
 
-def ver4(request):
-    return render(request, 'webtoonBot/ver4.html')
-
-def ver3(request):
-    pass
 def connection():
     try:
         con = sqlite3.connect('db.sqlite3')
@@ -781,7 +742,7 @@ def getResult_log(new_item_list, final_list):
 
     check = []
 
-    result_log = {}
+
     result_log = []
 
     if len(new_item_list) == 0:
@@ -789,9 +750,9 @@ def getResult_log(new_item_list, final_list):
         for i in final_list:
             final_list_tuple.append(getTuple(i))
 
-        # result_log.append([(1,1)])
+
         result_log.append([[(1, 1)], final_list_tuple])
-        # result_log["처음 웹툰을 접하는 당신을 위한 추천 웹툰!"] = final_list
+
 
     else:
         for genre in intersection:
@@ -809,9 +770,7 @@ def getResult_log(new_item_list, final_list):
                         temp_list.append(getTuple(i))
                         check.append(i)
                 if len(temp_list) != 0:
-                    # result_log.append([temp_str])
                     result_log.append([temp_str,temp_list])
-                    # result_log[temp_str] = temp_list
 
         left_over = (list(set(check).symmetric_difference(set(final_list))))
         left_over_tuple = []
@@ -819,13 +778,9 @@ def getResult_log(new_item_list, final_list):
             left_over_tuple.append(getTuple(i))
 
         if len(left_over) != 0:
-            # result_log.append([(0,0)])
             result_log.append([[(0, 0)], left_over_tuple])
-            # result_log["당신과 비슷한 취향의 독자들이 읽은 웹툰들!"] = left_over
     return result_log
 
-def ver4_result (request):
-    return render(request, 'webtoonBot/ver4_result.html')
 
 global new_item_list
 global new_user_name
@@ -844,9 +799,7 @@ def index(request):
     flag = 0
     og_list = pd.read_csv("user_rating_10.csv", encoding="euc-kr")
     og_list=og_list.sort_values('title')
-
     webtoon_list = list(og_list['title'].unique())
-    thumbnail_list = list(og_list['thumbnail'].unique())
     first_letter = getFirstLetter(getCoder("first_letter"),webtoon_list)
 
 
@@ -882,18 +835,18 @@ def index(request):
                 insert_one(con, one_data)
 
             return render(request, 'webtoonBot/index.html',
-                          {'webtoon_list': webtoon_list, 'thumbnail_list': thumbnail_list})
+                          {'webtoon_list': webtoon_list})
 
 
         elif 'submit_bad' in request.POST:
             print("submit_bad")
             return render(request, 'webtoonBot/index.html',
-                          {'webtoon_list': webtoon_list, 'thumbnail_list': thumbnail_list})
+                          {'webtoon_list': webtoon_list, })
 
 
         elif 'back' in request.POST:
             return render(request, 'webtoonBot/index.html',
-                          {'webtoon_list': webtoon_list, 'thumbnail_list': thumbnail_list})
+                          {'webtoon_list': webtoon_list, })
         else:
             print("none clicked")
 
@@ -937,7 +890,7 @@ def index(request):
         return render(request, 'webtoonBot/index_result.html',
                       {'result_log':result_log,'new_item_list2':new_item_list,'final_list': final_list,'new_item_list':new_item_list,'combined_list':combined_list})
     else:
-        return render(request, 'webtoonBot/index.html', {'webtoon_list': webtoon_list,'thumbnail_list':thumbnail_list})
+        return render(request, 'webtoonBot/index.html', {'webtoon_list': webtoon_list,})
 
 def getCoder(coder_name):
   filename = str(coder_name)+".txt"

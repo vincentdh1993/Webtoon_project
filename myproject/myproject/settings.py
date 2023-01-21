@@ -135,3 +135,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, '_static')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+CSRF_TRUSTED_ORIGINS = ['https://*.webtoonbot.com']
+CSRF_COOKIE_SECURE = ['https://*.webtoonbot.com']
+SESSION_COOKIE_SECURE = ['https://*.webtoonbot.com']
