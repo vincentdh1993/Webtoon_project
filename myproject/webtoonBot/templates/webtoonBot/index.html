@@ -17,7 +17,6 @@
 
   <style>
     @import url(http://www.openhiun.com/hangul/nanumbarungothic.css);
-
     body,
     table,
     div,
@@ -349,9 +348,9 @@
     <h2> 🤖네이버 웹툰 추천 봇 사용법🤖 </h2>
   </div>
   <div id="instruction">
-    <h4>1. 아이디를 입력한다.</h4>
-    <h4>2. 아래 목록에서 재밌게 본 웹툰들을 선택한다.</h4>
-    <h4>3. 우측의 엄지 버튼을 클릭하여 추천 결과를 받는다.</h4>
+    <br>
+    <h4>1. 아래 목록에서 재밌게 본 웹툰들을 선택한다.</h4>
+    <h4>2. 우측의 엄지 버튼을 클릭하여 추천 결과를 받는다.</h4>
     <!--    <h4>즐겨보았던 웹툰들을 선택하고 우측 초록버튼을 클릭하세요 :)</h4>-->
     <h4 id="totalStudents">현재 선택한 웹툰 수: 0</h4>
   </div>
@@ -375,8 +374,6 @@
     </div>
 
     <div class="cont-bg" id="cont-bg">
-      <label for="user_name">당신의 아이디를 입력해주세요:)</label>
-      <input type="text" id="user_name" name="user_name" /><br /><br />
       <ul class="nav nav-tabs">
         <li class="nav-item">
           <a class="nav-link" id="first_tab" name="first_tab" data-toggle="tab" href=".ㄱ">ㄱ</a>
@@ -421,7 +418,10 @@
           <a class="nav-link" data-toggle="tab" href=".ㅎ">ㅎ</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" data-toggle="tab" href=".a" >0~9</a>
+          <a class="nav-link" data-toggle="tab" href=".a" >ENG&0~9</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="by_popular" name="by_popular" data-toggle="tab" href=".ㄱ,.a,.ㄴ,.ㄷ,.ㄹ,.ㅁ,.ㅂ,.ㅅ,.ㅇ,.ㅈ,.ㅊ,.ㅋ,.ㅌ,.ㅍ,.ㅎ">전체</a>
         </li>
       </ul>
       <!-- <div class="cont-title tab-content"></div> -->

@@ -791,6 +791,10 @@ new_user_name=""
 flag = 0
 
 
+def getPopular(og_list):
+    og_list = og_list.iloc[og_list.groupby('title').title.transform('size').argsort(kind='mergesort')[::-1]]
+    return og_list
+
 
 def index(request):
     global new_item_list
@@ -798,7 +802,8 @@ def index(request):
     global flag
     flag = 0
     og_list = pd.read_csv("user_rating_10.csv", encoding="euc-kr")
-    og_list=og_list.sort_values('title')
+    og_list = getPopular(og_list)
+    # og_list=og_list.sort_values('title')
     webtoon_list = list(og_list['title'].unique())
     first_letter = getFirstLetter(getCoder("first_letter"),webtoon_list)
 
@@ -828,8 +833,10 @@ def index(request):
         if 'submit_good' in request.POST:
             print("submit_good")
             print(new_user_name,new_item_list)
-            new_log_time_list = [datetime.now() for i in range(len(new_item_list))]
+            now_time = str(datetime.now())
+            new_log_time_list = [now_time for i in range(len(new_item_list))]
             con = connection()
+            print(new_log_time_list,"@@@")
             for i in range(len(new_item_list)):
                 one_data = (new_user_name, new_item_list[i], new_log_time_list[i])
                 insert_one(con, one_data)
@@ -853,7 +860,7 @@ def index(request):
 
         submit = request.POST.get('submit')
         new_item_list = request.POST.getlist('user_webtoon_list')
-        new_user_name = request.POST.get('user_name')
+        new_user_name = "a"
         new_log_time_list = [datetime.now() for i in range(len(new_item_list))]
         print(new_item_list,"$")
 
