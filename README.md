@@ -3,9 +3,9 @@
 ![Nwebtoon](https://user-images.githubusercontent.com/17634399/211155655-13b02318-0a1d-4463-8eee-bb5f4bc8503f.gif)
 
 # 1. 데이터 수집 (Python)
-1. 왓챠 피디아 - 
+1. 왓챠 피디아 - 데이터 수집은 왓챠피디아(https://pedia.watcha.com/ko-KR/)에서 진행을 했습니다. 
 
-2. 제이버 웹툰 - 
+2. 네이버 웹툰 - 
 
 # 2. 추천시스템 모델 개발 (Pytorch)
 1. RecVae
