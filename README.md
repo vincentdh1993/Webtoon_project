@@ -1,6 +1,6 @@
 # 네이버 웹툰 추천 시스템
 
-![Nwebtoon](https://user-images.githubusercontent.com/17634399/211155655-13b02318-0a1d-4463-8eee-bb5f4bc8503f.gif)\
+![Nwebtoon](https://user-images.githubusercontent.com/17634399/211155655-13b02318-0a1d-4463-8eee-bb5f4bc8503f.gif)
 
 딥러닝을 활용한 추천시스템 구현 및 서빙 경험을 위해 진행한 개인 프로젝트 입니다. 개인화된 웹툰 추천시스템 개발을 위해 진행한 작업과정은 다음과 같았습니다.
 
@@ -31,7 +31,7 @@
 
 웹툰의 플랫폼이 네이버웹툰인 웹툰만 크롤링을 진행하고 사용자들의 explicit feedback (별점) 을 크롤링하여 생각보다 직관적인 데이터를 수집할 수 있었습니다.
 
-표준 편차 계산을 통해 별점이 3점이상인 웹툰들만 유저가 해당 웹툰을 "즐겨봤다"라고 판단하여 별점이 낮은 기록은 삭제했습니다. (별점이 낮은 리뷰들은 추후 negative review 정보를 추천 모델링에 함께 사용 예정)
+평균과 표준 편차 계산을 통해 별점이 3점이상인 웹툰들만 유저가 해당 웹툰을 "즐겨봤다"라고 판단하여 별점이 낮은 기록은 삭제했습니다. (별점이 낮은 리뷰들은 추후 negative review 정보를 추천 모델링에 함께 사용 예정)
 
 ![3점미만제거](https://user-images.githubusercontent.com/17634399/215338465-38a522f7-e814-4610-a4a3-096fe1ea8d79.png)
 
@@ -51,14 +51,20 @@
 최종적으로 총 972개의 웹툰과 1,759명의 사용자로 이루어진 104,660 개의 데이터를 정제했습니다.
 
 # 2. 추천시스템 모델 개발 (Pytorch)
-1. RecVae
-  - RecVae
-2. EASE
-  - Ease
-3. Multi-Vae
-  - Multi-Vae
-4. Ensemble (Hard Voting)
-  - Ensemble
+
+SOTA 추천 모델 중 ~~~~
+
+1. BERT4REC (ACM, 2019) - 해당 프로젝트의 데이터 특성상 sequential dependency를 가지지 못합니다. (유저가 어느 순서대로 읽었는지 알 수 없음)
+때문에 BERT4REC의 모델을 실험으로 돌렸을 때 결과가 처참했음.
+
+2. RecVae (WSDM, 2020)  - 
+
+3. EASE (RecSys,2019) - Computer Vision과는 달리 CF는 hidden layer를 적게 사용하는 것이 성능이 좋다고 하여 hidden layer를 아예 없애버린 linear한 모델. Sparse data에 유리하기 때문에 모델 최종 선택. 
+
+4. MultiVae (WWW, 2018) - 
+
+
+
 
 # 3. 웹페이지 개발 (Django)
 1. 페이지 기획
@@ -68,3 +74,11 @@
 # 4. 배치 프로세싱 (AirFlow)
 Batch Inference vs Online Inference
 1. AirFlow 구현
+
+
+# 기타
+- 웹툰회사의 관점에서 봤을 때 새로운 아이템들이 자꾸 발굴되어야 하지 않을까?
+- Negative Reviews도 모델링에 사용하면 좋지 않을까?
+- 쿠팡에서 상품을 둘러보는 것과 달리, 웹툰은 시간을 가지고 보는 컨텐츠인데 웹툰의 특성상 배치 Inference가 더 맞다고 판단.
+- 추천시스템의 중립성? Filter Bubble ?
+- MAB - 피드백이 실시간으로 모델에 적용되는건데 이건 웹툰 소비 사이클과 관련이 없어보임
