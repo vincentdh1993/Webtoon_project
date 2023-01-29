@@ -13,6 +13,7 @@
 [CF 모델로 진행]
 1. User ↔ Item 간의 데이터를 수집할 수 있을까? 
 2. CF 모델의 단점인 신규 아이템에 대해서는 어떻게 처리할까? 
+
 [CB 모델로 진행]
 1. 웹툰의 Cosine Similarity 또는 Mean Squared Difference를 어떻게 구현할 것인가?
 
@@ -20,6 +21,10 @@
 데이터를 알아보는 과정에서 왓챠피디아(https://pedia.watcha.com/ko-KR/)의 데이터를 크롤링하기에 적합하다고 판단하였고 python의 Selenium 라이브러리를 활용하여 크롤링을 진행하였습니다. 
 
 ![왓챠피디아1](https://user-images.githubusercontent.com/17634399/215336912-30400c93-052d-4238-84b4-02887cf1d51f.png)
+#### <타임인조선의 유저 평가 예시>
+
+![왓챠피디아2](https://user-images.githubusercontent.com/17634399/215337333-6e389443-7f2d-4ec9-a800-b82f8d6f3b4a.png)
+#### <왓챠피디아 유저A가 평가한 웹툰들 예시>
 
 
 1. User ↔ Item rating data 수집
