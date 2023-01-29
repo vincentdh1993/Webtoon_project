@@ -84,3 +84,4 @@ Batch Inference vs Online Inference
 - 쿠팡에서 상품을 둘러보는 것과 달리, 웹툰은 시간을 가지고 보는 컨텐츠인데 웹툰의 특성상 배치 Inference가 더 맞다고 판단.
 - 추천시스템의 중립성? Filter Bubble ?
 - MAB - 피드백이 실시간으로 모델에 적용되는건데 이건 웹툰 소비 사이클과 관련이 없어보임
+- Thumbnail 기반 추천은 어떨까?
