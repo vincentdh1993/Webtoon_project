@@ -18,8 +18,10 @@
 1. 웹툰의 Cosine Similarity 또는 Mean Squared Difference를 어떻게 구현할 것인가?
 
 일반적으로 CB모델보다는 CF 모델이 좋은 성능을 내기에 CF 모델로 진행하기로 하였고, 총 Item의 개수를 제한하여 신규 아이템에 대한 가능성을 제외 하였습니다. 
+
 웹툰에 대한 유저 개인의 취향은 비슷할 것이라 가정하고, 리뷰수가 충분하다면 성능이 괜찮은 추천 모델을 구현할 수 있다고 판단했습니다.
-데이터를 알아보는 과정에서 왓챠피디아(https://pedia.watcha.com/ko-KR/)의 데이터를 크롤링하기에 적합하다고 판단하였고 python의 Selenium 라이브러리를 활용하여 크롤링을 진행하였습니다. 
+
+데이터를 알아보는 과정에서 왓챠피디아(https://pedia.watcha.com/ko-KR/) 의 데이터를 크롤링하기에 적합하다고 판단하였고 python의 Selenium 라이브러리를 활용하여 크롤링을 진행하였습니다. 
 
 #### <타임인조선의 유저 평가 예시>
 ![왓챠피디아1](https://user-images.githubusercontent.com/17634399/215336912-30400c93-052d-4238-84b4-02887cf1d51f.png)
@@ -41,7 +43,7 @@
 
 이는 추천시스템의 성능을 저하시킬 수 있으므로 최소 10개 이상의 리뷰를 가진 웹툰과 유저들만으로 이루어진 데이터셋을 구성하였습니다. 
 
-![최소데이터](https://user-images.githubusercontent.com/17634399/215339494-0b259cec-fcee-4e5e-818a-c9b8af945570.png)
+![최소데이터](https://user-images.githubusercontent.com/17634399/215339688-99b4cc8c-c68f-48c1-b987-31ee7f2f1590.png)
 
 
 ![EDA결과](https://user-images.githubusercontent.com/17634399/215339547-3fcda472-64df-4fbd-b0e7-da2b41351a2f.png)
