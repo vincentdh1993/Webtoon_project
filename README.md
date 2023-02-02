@@ -70,6 +70,7 @@ def greet(name):
   print("Hello, " + name + ". How are you today?")
 
 greet("John")
+```
 
 
 # 3. 웹페이지 개발 (Django)
