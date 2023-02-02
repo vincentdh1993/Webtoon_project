@@ -65,12 +65,6 @@ SOTA 추천 모델 중 ~~~~
 
 4. MultiVae (WWW, 2018) - 
 
-```python
-def greet(name):
-  print("Hello, " + name + ". How are you today?")
-
-greet("John")
-```
 
 
 # 3. 웹페이지 개발 (Django)
@@ -81,7 +75,35 @@ greet("John")
 # 4. 배치 프로세싱 (AirFlow)
 Batch Inference vs Online Inference
 1. AirFlow 구현
+```python
+from airflow import DAG
+from airflow.operators.python_operator import PythonOperator
+from datetime import datetime, timedelta
 
+default_args = {
+    'owner': 'admin',
+    'depends_on_past': False,
+    'start_date': datetime(2023, 1, 1),
+    'email_on_failure': False,
+    'email_on_retry': False,
+    'retries': 1,
+    'retry_delay': timedelta(minutes=5),
+}
+
+dag = DAG(
+    'update_model_dag',
+    default_args=default_args,
+    description='python run update_model.py script every 3am in the morning',
+    schedule_interval='0 3 * * *'
+)
+
+update_model = PythonOperator(
+    task_id='update_model',
+    python_callable='update_model.py',
+    dag=dag
+)
+```
+해당 코드를 airflow webserver 와 airflow scheduler를 실행시키고 http://localhost:8080으로 접속해서 DAG를 on 시켜주었습니다.
 
 # 기타
 - 웹툰회사의 관점에서 봤을 때 새로운 아이템들이 자꾸 발굴되어야 하지 않을까?
