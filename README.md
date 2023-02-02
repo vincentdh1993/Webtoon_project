@@ -97,6 +97,7 @@ def read_ratings():
     conn.close()
 ```
 
+추가 데이터를 획득하여 모델에 새로 학습을 시켜주는 코드를 AirFlow를 활용하여 매일 오전 3시에 실행시켜 줍니다. (유저의 정보를 함께 불러오는 등의 여러 task가 있으면 여러 DAG를 통해 AirFlow를 풍성하게 사용할 수 있겠으나 아직 추가 task에 대한 방향 설계가 안되어있습니다.)
 
 
 1. AirFlow 구현
@@ -118,7 +119,7 @@ default_args = {
 dag = DAG(
     'update_model_dag',
     default_args=default_args,
-    description='python run update_model.py script every 3am in the morning',
+    description='python run update_model.py every 3am',
     schedule_interval='0 3 * * *'
 )
 
