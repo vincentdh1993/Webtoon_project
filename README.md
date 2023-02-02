@@ -65,7 +65,11 @@ SOTA 추천 모델 중 ~~~~
 
 4. MultiVae (WWW, 2018) - 
 
+```python
+def greet(name):
+  print("Hello, " + name + ". How are you today?")
 
+greet("John")
 
 
 # 3. 웹페이지 개발 (Django)
