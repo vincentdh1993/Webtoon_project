@@ -131,9 +131,11 @@ update_model = PythonOperator(
 ```
 해당 코드를 airflow webserver 와 airflow scheduler를 실행시키고 http://localhost:8080으로 접속해서 DAG를 on 시켜주었습니다.
 
-# 기타
-- 웹툰회사의 관점에서 봤을 때 새로운 아이템들이 자꾸 발굴되어야 하지 않을까?
-- Negative Reviews도 모델링에 사용하면 좋지 않을까?
+# 추가 고민사항
+1.웹툰회사의 관점에서 봤을 때 새로운 아이템들이 자꾸 발굴되어야 하지 않을까?
+- 네이버웹툰의 입장이 되어봤을 떄, !!!!!
+
+2. Negative Reviews도 모델링에 사용하면 좋지 않을까?
 - 쿠팡에서 상품을 둘러보는 것과 달리, 웹툰은 시간을 가지고 보는 컨텐츠인데 웹툰의 특성상 배치 Inference가 더 맞다고 판단.
 - 추천시스템의 중립성? Filter Bubble ?
 - MAB - 피드백이 실시간으로 모델에 적용되는건데 이건 웹툰 소비 사이클과 관련이 없어보임
