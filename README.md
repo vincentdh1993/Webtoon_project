@@ -85,7 +85,17 @@ SOTA 추천 모델 중 ~~~~
 
 배치 프로세싱은 Airbnb의 Apache-airflow를 사용하였으며, webtoonbot을 이용하고 "Good" 버튼을 누른 사용자 중에서 10개 이상의 웹툰을 선택했던 유저의 데이터만 추가학습에 활용 하였습니다.
 
-
+```python
+#10개 이상의 웹툰을 선택한 유저의 데이터만 사용
+def read_ratings():
+    conn = sqlite3.connect('dq.sqlite3')
+    df = pd.read_sql_query("SELECT * FROM user_rating", conn)
+    user_counts = df['user'].value_counts()
+    users_with_more_than_10_ratings = user_counts[user_counts > 10].index
+    df_filtered = df[df['user'].isin(users_with_more_than_10_ratings)]
+    print(df_filtered)
+    conn.close()
+```
 
 
 
