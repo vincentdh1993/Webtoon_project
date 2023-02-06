@@ -65,7 +65,58 @@ SOTA 추천 모델 중 ~~~~
 
 4. MultiVae (WWW, 2018) - 
 
+5. VASP (ICAN, 2021) - FLVAE (Colloborative Filtering VAE) + Neural EASE 의 모델로, non-linear와 linear 성향을 모두 모델링 하기 위한 방법입니다. 두개의 모델을 따로 계산 한 뒤에 각각 sigmoid를 씌운 상태로 요소곱을 하여 합치게 되는 모델입니다.
 
+https://paperswithcode.com/sota/collaborative-filtering-on-movielens-20m 에 당당히 1위를 기록중인 SOTA 모델로 웹툰 프로젝트에 적용하기 위해 논문을 읽고 분석해보기로 하였습니다. 저자가 공식적으로 제공한 코드는 Keras로 작성되어있고, 인터넷 검색을 해도 참고할 만 한PyTorch로 작성되어있는 코드가 없어서 오피셜 Keras 코드와 논문 내용을 기반으로 PyTorch 코드를 아래와 같이 간략하게 작성하였습니다.
+
+```python
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+
+class VASP(nn.Module):
+    def __init__(self, num_users, num_items, embedding_dim, latent_dim):
+        super(VASP, self).__init__()
+        self.user_embeddings = nn.Embedding(num_users, embedding_dim)
+        self.item_embeddings = nn.Embedding(num_items, embedding_dim)
+        self.fc1 = nn.Linear(embedding_dim, latent_dim)
+        self.fc2 = nn.Linear(latent_dim, embedding_dim)
+        self.fc3 = nn.Linear(embedding_dim, 1)
+        self.fc4 = nn.Linear(embedding_dim, latent_dim)
+        self.fc5 = nn.Linear(latent_dim, embedding_dim)
+        
+    def encoder(self, user_indices, item_indices):
+        user_embedding = self.user_embeddings(user_indices)
+        item_embedding = self.item_embeddings(item_indices)
+        x = user_embedding * item_embedding
+        h = F.relu(self.fc1(x))
+        return h
+    
+    def decoder(self, h):
+        x = F.relu(self.fc2(h))
+        return x
+    
+    def shallow_path(self, user_indices, item_indices):
+        user_embedding = self.user_embeddings(user_indices)
+        item_embedding = self.item_embeddings(item_indices)
+        x = user_embedding * item_embedding
+        h = F.relu(self.fc4(x))
+        x = F.relu(self.fc5(h))
+        return x
+        
+    def forward(self, user_indices, item_indices):
+        h = self.encoder(user_indices, item_indices)
+        x = self.decoder(h)
+        shallow_x = self.shallow_path(user_indices, item_indices)
+        x = x + shallow_x
+        prediction = self.fc3(x)
+        return prediction
+```
+
+Loss 값이 감소하는것을 보고 적용이 충분히 가능할 것이라 생각하였지만, 학습에 걸리는 시간이 너무 오래 걸렸고, 딥러닝 모델 서버를 따로 운용을 하지 못하는 상황이기에 당장 적용은 힘들다고 판단하였습니다. 추후, 코드 최적화를 진행하여 Lightsail 자체 운영이 가능하게 되면 적용할 예정입니다.
 
 # 3. 웹페이지 개발 (Django)
 1. 페이지 기획
