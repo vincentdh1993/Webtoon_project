@@ -67,7 +67,7 @@ SOTA 추천 모델 중 ~~~~
 
 5. VASP (ICAN, 2021) - FLVAE (Colloborative Filtering VAE) + Neural EASE 의 모델로, non-linear와 linear 성향을 모두 모델링 하기 위한 방법입니다. 두개의 모델을 따로 계산 한 뒤에 각각 sigmoid를 씌운 상태로 요소곱을 하여 합치게 되는 모델입니다.
 
-https://paperswithcode.com/sota/collaborative-filtering-on-movielens-20m 에 당당히 1위를 기록중인 SOTA 모델로 웹툰 프로젝트에 적용하기 위해 논문을 읽고 분석해보기로 하였습니다. 저자가 공식적으로 제공한 코드는 Keras로 작성되어있고, 인터넷 검색을 해도 참고할 만 한PyTorch로 작성되어있는 코드가 없어서 오피셜 Keras 코드와 논문 내용을 기반으로 PyTorch 코드를 아래와 같이 간략하게 작성하였습니다.
+    https://paperswithcode.com/sota/collaborative-filtering-on-movielens-20m 에 당당히 1위를 기록중인 SOTA 모델로, 해당 웹툰 프로젝트에 적용하기 위해 논문을 읽고 분석해보기로 하였습니다. 저자가 공식적으로 제공한 코드는 Keras로 작성되어 있었고, 인터넷 검색을 해도 참고할 만 한 PyTorch 코드가 없어서 오피셜 Keras 코드와 논문 내용을 기반으로 PyTorch 코드를 아래와 같이 간략하게 작성하였습니다.
 
 ```python
 import torch
@@ -87,7 +87,8 @@ class VASP(nn.Module):
         self.fc3 = nn.Linear(embedding_dim, 1)
         self.fc4 = nn.Linear(embedding_dim, latent_dim)
         self.fc5 = nn.Linear(latent_dim, embedding_dim)
-        
+    
+    #VAE의 Encoder 부분
     def encoder(self, user_indices, item_indices):
         user_embedding = self.user_embeddings(user_indices)
         item_embedding = self.item_embeddings(item_indices)
@@ -95,10 +96,12 @@ class VASP(nn.Module):
         h = F.relu(self.fc1(x))
         return h
     
+    #VAE의 Decoder 부분
     def decoder(self, h):
         x = F.relu(self.fc2(h))
         return x
     
+    #Neural EASE 부분
     def shallow_path(self, user_indices, item_indices):
         user_embedding = self.user_embeddings(user_indices)
         item_embedding = self.item_embeddings(item_indices)
@@ -107,6 +110,7 @@ class VASP(nn.Module):
         x = F.relu(self.fc5(h))
         return x
         
+    #학습
     def forward(self, user_indices, item_indices):
         h = self.encoder(user_indices, item_indices)
         x = self.decoder(h)
