@@ -73,7 +73,9 @@ class Bert4Rec(nn.Module):
 ```
 
 
-2. RecVae (WSDM, 2020)  - VAE 중의 SOTA. 최종모델로 선정
+2. RecVAE (WSDM, 2020)  - Encoder 를 통해 user-item representation을 학습하고, Decoder를 통해 feedback score를 예측합니다. 여기서 추가로 composite priror 를 통해 user의 과거 선호도를 모델링하게 되는데, 위 세가지 모듈을 통해서 user-item interaction의 숨은 의미를 유의미하게 나타냅니다. Implicit feedback에 강점을 낸다고 하지만, Explicit feedback에서도 높은 성능을 보여주었고, full-ranking 계산과 달리 한번 학습을 진행할 때, 전체 유저 데이터를 matrix 형태로 사용하기 때문에 학습 시간이 매우 빨랐습니다. 시간, 성능을 고려하여, 해당 프로젝트의 실사용 모델로 선정하게 되었습니다. 
+
+Autoencoder기반의 추천모델중 학습시간이 적고 SOTA. 최종모델로 선정 Piror 
 
 ```python
 import torch
@@ -84,9 +86,12 @@ from torch.utils.data import Dataset, DataLoader
 class RecVAE(nn.Module):
     def __init__(self, input_dim, hidden_dim=600, latent_dim=200):
         super(RecVAE, self).__init__()
-
+        
+        #user-item representation 학습
         self.encoder = Encoder(hidden_dim, latent_dim, input_dim)
+        #user history preference 학습
         self.prior = CompositePrior(hidden_dim, latent_dim, input_dim)
+        #user의 feedback score 예측
         self.decoder = nn.Linear(latent_dim, input_dim)
 
     def reparameterize(self, mu, logvar):
