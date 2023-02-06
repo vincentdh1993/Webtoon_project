@@ -127,7 +127,41 @@ class RecVAE(nn.Module):
             return x_pred
 ```
 
-3. EASE (RecSys,2019) - Computer Vision과는 달리 CF는 hidden layer를 적게 사용하는 것이 성능이 좋다고 하여 hidden layer를 아예 없애버린 linear한 모델. Sparse data에 유리하기 때문에 모델 최종 선택. 
+3. EASE (RecSys,2019) - Computer Vision과는 달리 CF는 hidden layer를 적게 사용하는 것이 성능이 좋다고 하여 hidden layer를 아예 없애버린 linear한 모델입니다. Graph Embedding 방법을 착안한 모델이며, 구성이 매우 단순하여 딥러닝 모델이라고 보기 어려운 면도 있지만 성능과 학습시간은 매우 뛰어났습니다. 다른 Autoencoder 처럼 latent factor를 통해 추천을 하지는 않지만 input 데이터가 ouput 데이터로 재생성 됩니다. 성능과 학습시간을 고려하여 최종 실사용 모델로 선정하였습니다.
+
+```python
+class EASE():
+    def __init__(self, X, reg):
+        self.X = self._convert_sp_mat_to_sp_tensor(X)
+        self.reg = reg
+    
+    #scipy sparse matrix를 PyTorch sparse Tensor로 변환 하는 함수
+    def _convert_sp_mat_to_sp_tensor(self, X):
+        coo = X.tocoo().astype(np.float32)
+        i = torch.LongTensor(np.mat([coo.row, coo.col]))
+        v = torch.FloatTensor(coo.data)
+        res = torch.sparse.FloatTensor(i, v, coo.shape).to(device)
+        return res
+    
+    def fit(self):
+        #sparse matrix인 'self.X'를 dense matrix로 변환하고 self.X 와 self.X를 곱하여 G matrix에 저장합니다.
+        G = self.X.to_dense().t() @ self.X.to_dense()
+        #G.shape[0] x G.shape[0] 크기의 matrix를 만들며, 대각선의 값들은 1로 채워서 만들고 나머지는 0으로 합니다.
+        diagIndices = torch.eye(G.shape[0]) == 1
+        #self.reg를 G matrix에 추가
+        G[diagIndices] += self.reg
+        
+        #G inverse를 계산하여 P matrix에 담습니다.
+        P = G.inverse()
+        # P 를 -P의 대각선으로 나누고 B matrix에 담습니다. 
+        #여기서 B는 아이템 간의 가중치 행렬을 나타냅니다. (유일한 학습 파라미터)
+        B = P / (-1 * P.diag())
+        # B의 대각선을 0으로 만듭니다.
+        B[diagIndices] = 0
+        self.B = B
+        #self.X에 B를 곱해주며 결과값을 self.pred에 저장합니다.
+        self.pred = self.X.to_dense() @ B
+```
 
 4. MultiVae (WWW, 2018) - 
 
