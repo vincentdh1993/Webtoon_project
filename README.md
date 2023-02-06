@@ -103,7 +103,8 @@ class RecVAE(nn.Module):
         else:
             return mu
     
-    # Encoder를 통해 user_ratings에 대한 mean 과 log variance를 구하고, reparameterzie를 통해 random noise를 추가하여 z를 구합니다. 구한 z를 Decoder를 통해 x_pred를 구하게 됩니다. gamma, beta, dropout_rate 하이퍼파라미터를 조절하며 loss를 구할 수 있습니다.
+    # Encoder를 통해 user_ratings에 대한 mean 과 log variance를 구하고, reparameterzie를 통해 random noise를 추가하여 z를 구합니다. 
+    # 최종적으로 z를 Decoder를 통해 x_pred를 구하게 됩니다. gamma, beta, dropout_rate 하이퍼파라미터를 조절하며 loss를 구할 수 있습니다.
     def forward(self, user_ratings, beta=None, gamma=0.005, dropout_rate=0.5, calculate_loss=True):
         mu, logvar = self.encoder(user_ratings, dropout_rate=dropout_rate)
         z = self.reparameterize(mu, logvar)
