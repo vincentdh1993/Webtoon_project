@@ -56,10 +56,68 @@ www.webtoonbot.com
 
 SOTA 추천 모델 중 ~~~~
 
-1. BERT4REC (ACM, 2019) - 해당 프로젝트의 데이터 특성상 sequential dependency를 가지지 못합니다. (유저가 어느 순서대로 읽었는지 알 수 없음)
+1. BERT4REC (ACM, 2019) - 해당 프로젝트의 크롤링 된 데이터 특성상 sequential dependency를 가지지 못합니다. (유저가 어느 순서대로 읽었는지 알 수 없음)
 때문에 BERT4REC의 모델을 실험으로 돌렸을 때 결과가 처참했음.
+```python
+class Bert4Rec(nn.Module):
+    def __init__(self, num_classes):
+        super(Bert4Rec, self).__init__()
+        self.num_classes = num_classes
+        self.bert = BertModel.from_pretrained('bert-base-uncased')
+        self.fc = nn.Linear(768, num_classes)
 
-2. RecVae (WSDM, 2020)  - 
+    def forward(self, input_ids, attention_mask):
+        _, pooled_output = self.bert(input_ids, attention_mask=attention_mask)
+        logits = self.fc(pooled_output)
+        return logits
+```
+
+
+2. RecVae (WSDM, 2020)  - VAE 중의 SOTA. 최종모델로 선정
+
+```python
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from torch.utils.data import Dataset, DataLoader
+
+class RecVAE(nn.Module):
+    def __init__(self, input_dim, hidden_dim=600, latent_dim=200):
+        super(RecVAE, self).__init__()
+
+        self.encoder = Encoder(hidden_dim, latent_dim, input_dim)
+        self.prior = CompositePrior(hidden_dim, latent_dim, input_dim)
+        self.decoder = nn.Linear(latent_dim, input_dim)
+
+    def reparameterize(self, mu, logvar):
+        if self.training:
+            std = torch.exp(0.5 * logvar)
+            eps = torch.randn_like(std)
+            return eps.mul(std).add_(mu)
+        else:
+            return mu
+
+    def forward(self, user_ratings, beta=None, gamma=0.005, dropout_rate=0.5, calculate_loss=True):
+        mu, logvar = self.encoder(user_ratings, dropout_rate=dropout_rate)
+        z = self.reparameterize(mu, logvar)
+        x_pred = self.decoder(z)
+
+        if calculate_loss:
+            if gamma:
+                norm = user_ratings.sum(dim=-1)
+                kl_weight = gamma * norm
+            elif beta:
+                kl_weight = beta
+
+            mll = (F.log_softmax(x_pred, dim=-1) * user_ratings).sum(dim=-1).mean()
+            kld = (log_norm_pdf(z, mu, logvar) - self.prior(user_ratings, z)).sum(dim=-1).mul(kl_weight).mean()
+            negative_elbo = -(mll - kld)
+
+            return (mll, kld), negative_elbo
+
+        else:
+            return x_pred
+```
 
 3. EASE (RecSys,2019) - Computer Vision과는 달리 CF는 hidden layer를 적게 사용하는 것이 성능이 좋다고 하여 hidden layer를 아예 없애버린 linear한 모델. Sparse data에 유리하기 때문에 모델 최종 선택. 
 
