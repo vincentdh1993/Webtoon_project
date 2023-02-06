@@ -56,7 +56,9 @@ www.webtoonbot.com
 
 현재 발표된 SOTA 논문 중에서, 웹툰 프로젝트와의 적합성, 학습시간 등을 고려하여 여러 실험을 진행하였습니다. 실험을 통해 좋은 성능을 보이는 모델들을 선정하여 Hard-Voting방식의 Ensemble을 통해 최대 20개의 웹툰을 추천하는 시스템을 기획하였습니다.
 
-1. BERT4REC (ACM, 2019) - Transformer 기반의 모델은 user rating을 임베딩하여 추후에 선호할 영화를 예측합니다. NLP 분야에서 좋은 성능을 보이는 Transformer지만, 해당 프로젝트의 크롤링 된 데이터 특성상 sequential dependency를 가지지 못합니다. e.g. 유저가 읽은 순서, 웹툰 회차별 순서 등. 따라서 Bert4REC 실험을 진행하였을 때, 결과가 좋지 못하였고, 실사용 모델로는 선정하지 않았습니다.
+1. Bert4Rec (ACM, 2019) - Transformer 기반의 모델은 user rating을 임베딩하여 추후에 선호할 영화를 예측합니다. NLP 분야에서 좋은 성능을 보이는 Transformer지만, 해당 프로젝트의 크롤링 된 데이터 특성상 sequential dependency를 가지지 못합니다. e.g. 유저가 읽은 순서, 웹툰 회차별 순서 등. 
+
+    따라서 Bert4REC 실험을 진행하였을 때, 결과가 좋지 못하였고, 실사용 모델로는 선정하지 않았습니다.
 
 ```python
 class Bert4Rec(nn.Module):
