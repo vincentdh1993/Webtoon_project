@@ -97,147 +97,147 @@ def preprocessing(data,n):
 2. RecVAE (WSDM, 2020)  - Encoder 를 통해 user-item representation을 학습하고, Decoder를 통해 feedback score를 예측합니다. 여기서 추가로 composite priror 를 통해 user의 과거 선호도를 모델링하게 되는데, 위 세가지 모듈을 통해서 user-item interaction의 숨은 의미를 유의미하게 나타냅니다. Implicit feedback에 강점을 낸다고 하지만, Explicit feedback에서도 높은 성능을 보여주었고, full-ranking 계산과 달리 한번 학습을 진행할 때, 전체 유저 데이터를 matrix 형태로 사용하기 때문에 학습 시간이 매우 빨랐습니다. 시간, 성능을 고려하여, 해당 프로젝트의 실사용 모델로 선정하게 되었습니다. 
 
 
-```python
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-from torch.utils.data import Dataset, DataLoader
+    ```python
+    import torch
+    import torch.nn as nn
+    import torch.nn.functional as F
+    from torch.utils.data import Dataset, DataLoader
 
-class RecVAE(nn.Module):
-    def __init__(self, input_dim, hidden_dim=600, latent_dim=200):
-        super(RecVAE, self).__init__()
-        
-        #user-item representation 학습
-        self.encoder = Encoder(hidden_dim, latent_dim, input_dim)
-        #user history preference 학습
-        self.prior = CompositePrior(hidden_dim, latent_dim, input_dim)
-        #user의 feedback score 예측
-        self.decoder = nn.Linear(latent_dim, input_dim)
+    class RecVAE(nn.Module):
+        def __init__(self, input_dim, hidden_dim=600, latent_dim=200):
+            super(RecVAE, self).__init__()
 
-    def reparameterize(self, mu, logvar):
-        if self.training:
-            std = torch.exp(0.5 * logvar)
-            eps = torch.randn_like(std)
-            return eps.mul(std).add_(mu)
-        else:
-            return mu
-    
-    # Encoder를 통해 user_ratings에 대한 mean 과 log variance를 구하고, reparameterzie를 통해 random noise를 추가하여 z를 구합니다. 
-    # 최종적으로 z를 Decoder를 통해 x_pred를 구하게 됩니다. gamma, beta, dropout_rate 하이퍼파라미터를 조절하며 loss를 구할 수 있습니다.
-    def forward(self, user_ratings, beta=None, gamma=0.005, dropout_rate=0.5, calculate_loss=True):
-        mu, logvar = self.encoder(user_ratings, dropout_rate=dropout_rate)
-        z = self.reparameterize(mu, logvar)
-        x_pred = self.decoder(z)
+            #user-item representation 학습
+            self.encoder = Encoder(hidden_dim, latent_dim, input_dim)
+            #user history preference 학습
+            self.prior = CompositePrior(hidden_dim, latent_dim, input_dim)
+            #user의 feedback score 예측
+            self.decoder = nn.Linear(latent_dim, input_dim)
 
-        if calculate_loss:
-            if gamma:
-                norm = user_ratings.sum(dim=-1)
-                kl_weight = gamma * norm
-            elif beta:
-                kl_weight = beta
+        def reparameterize(self, mu, logvar):
+            if self.training:
+                std = torch.exp(0.5 * logvar)
+                eps = torch.randn_like(std)
+                return eps.mul(std).add_(mu)
+            else:
+                return mu
 
-            mll = (F.log_softmax(x_pred, dim=-1) * user_ratings).sum(dim=-1).mean()
-            kld = (log_norm_pdf(z, mu, logvar) - self.prior(user_ratings, z)).sum(dim=-1).mul(kl_weight).mean()
-            negative_elbo = -(mll - kld)
+        # Encoder를 통해 user_ratings에 대한 mean 과 log variance를 구하고, reparameterzie를 통해 random noise를 추가하여 z를 구합니다. 
+        # 최종적으로 z를 Decoder를 통해 x_pred를 구하게 됩니다. gamma, beta, dropout_rate 하이퍼파라미터를 조절하며 loss를 구할 수 있습니다.
+        def forward(self, user_ratings, beta=None, gamma=0.005, dropout_rate=0.5, calculate_loss=True):
+            mu, logvar = self.encoder(user_ratings, dropout_rate=dropout_rate)
+            z = self.reparameterize(mu, logvar)
+            x_pred = self.decoder(z)
 
-            return (mll, kld), negative_elbo
+            if calculate_loss:
+                if gamma:
+                    norm = user_ratings.sum(dim=-1)
+                    kl_weight = gamma * norm
+                elif beta:
+                    kl_weight = beta
 
-        else:
-            return x_pred
-```
+                mll = (F.log_softmax(x_pred, dim=-1) * user_ratings).sum(dim=-1).mean()
+                kld = (log_norm_pdf(z, mu, logvar) - self.prior(user_ratings, z)).sum(dim=-1).mul(kl_weight).mean()
+                negative_elbo = -(mll - kld)
+
+                return (mll, kld), negative_elbo
+
+            else:
+                return x_pred
+    ```
 
 3. EASE (RecSys,2019) - Computer Vision과는 달리 CF는 hidden layer를 적게 사용하는 것이 성능이 좋다고 하여 hidden layer를 아예 없애버린 linear한 모델입니다. Graph Embedding 방법을 착안한 모델이며, 구성이 매우 단순하여 딥러닝 모델이라고 보기 어려운 면도 있지만 성능과 학습시간은 매우 뛰어났습니다. 다른 Autoencoder 처럼 latent factor를 통해 추천을 하지는 않지만 input 데이터가 ouput 데이터로 재생성 됩니다. 성능과 학습시간을 고려하여 최종 실사용 모델로 선정하였습니다.
 
-```python
-class EASE():
-    def __init__(self, X, reg):
-        self.X = self._convert_sp_mat_to_sp_tensor(X)
-        self.reg = reg
-    
-    #scipy sparse matrix를 PyTorch sparse Tensor로 변환 하는 함수
-    def _convert_sp_mat_to_sp_tensor(self, X):
-        coo = X.tocoo().astype(np.float32)
-        i = torch.LongTensor(np.mat([coo.row, coo.col]))
-        v = torch.FloatTensor(coo.data)
-        res = torch.sparse.FloatTensor(i, v, coo.shape).to(device)
-        return res
-    
-    def fit(self):
-        #sparse matrix인 'self.X'를 dense matrix로 변환하고 self.X 와 self.X를 곱하여 G matrix에 저장합니다.
-        G = self.X.to_dense().t() @ self.X.to_dense()
-        #G.shape[0] x G.shape[0] 크기의 matrix를 만들며, 대각선의 값들은 1로 채워서 만들고 나머지는 0으로 합니다.
-        diagIndices = torch.eye(G.shape[0]) == 1
-        #self.reg를 G matrix에 추가
-        G[diagIndices] += self.reg
-        
-        #G inverse를 계산하여 P matrix에 담습니다.
-        P = G.inverse()
-        # P 를 -P의 대각선으로 나누고 B matrix에 담습니다. 
-        #여기서 B는 아이템 간의 가중치 행렬을 나타냅니다. (유일한 학습 파라미터)
-        B = P / (-1 * P.diag())
-        # B의 대각선을 0으로 만듭니다.
-        B[diagIndices] = 0
-        self.B = B
-        #self.X에 B를 곱해주며 결과값을 self.pred에 저장합니다.
-        self.pred = self.X.to_dense() @ B
-```
+    ```python
+    class EASE():
+        def __init__(self, X, reg):
+            self.X = self._convert_sp_mat_to_sp_tensor(X)
+            self.reg = reg
+
+        #scipy sparse matrix를 PyTorch sparse Tensor로 변환 하는 함수
+        def _convert_sp_mat_to_sp_tensor(self, X):
+            coo = X.tocoo().astype(np.float32)
+            i = torch.LongTensor(np.mat([coo.row, coo.col]))
+            v = torch.FloatTensor(coo.data)
+            res = torch.sparse.FloatTensor(i, v, coo.shape).to(device)
+            return res
+
+        def fit(self):
+            #sparse matrix인 'self.X'를 dense matrix로 변환하고 self.X 와 self.X를 곱하여 G matrix에 저장합니다.
+            G = self.X.to_dense().t() @ self.X.to_dense()
+            #G.shape[0] x G.shape[0] 크기의 matrix를 만들며, 대각선의 값들은 1로 채워서 만들고 나머지는 0으로 합니다.
+            diagIndices = torch.eye(G.shape[0]) == 1
+            #self.reg를 G matrix에 추가
+            G[diagIndices] += self.reg
+
+            #G inverse를 계산하여 P matrix에 담습니다.
+            P = G.inverse()
+            # P 를 -P의 대각선으로 나누고 B matrix에 담습니다. 
+            #여기서 B는 아이템 간의 가중치 행렬을 나타냅니다. (유일한 학습 파라미터)
+            B = P / (-1 * P.diag())
+            # B의 대각선을 0으로 만듭니다.
+            B[diagIndices] = 0
+            self.B = B
+            #self.X에 B를 곱해주며 결과값을 self.pred에 저장합니다.
+            self.pred = self.X.to_dense() @ B
+    ```
 
 4. MultiVae (WWW, 2018) - 
 
 5. VASP (ICAN, 2021) - FLVAE (Colloborative Filtering VAE) + Neural EASE 의 모델로, non-linear와 linear 성향을 모두 모델링 하기 위한 방법입니다. 두개의 모델을 따로 계산 한 뒤에 각각 sigmoid를 씌운 상태로 요소곱을 하여 합치게 되는 모델입니다. https://paperswithcode.com/sota/collaborative-filtering-on-movielens-20m 에 당당히 1위를 기록중인 SOTA 모델로, 해당 웹툰 프로젝트에 적용하기 위해 논문을 읽고 분석해보기로 하였습니다. 저자가 공식적으로 제공한 코드는 Keras로 작성되어 있었고, 인터넷 검색을 해도 참고할 만 한 PyTorch 코드가 없어서 오피셜 Keras 코드와 논문 내용을 기반으로 PyTorch 코드를 아래와 같이 간략하게 작성하였습니다.
 
-```python
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import pandas as pd
-import numpy as np
-from sklearn.model_selection import train_test_split
+    ```python
+    import torch
+    import torch.nn as nn
+    import torch.nn.functional as F
+    import pandas as pd
+    import numpy as np
+    from sklearn.model_selection import train_test_split
 
-class VASP(nn.Module):
-    def __init__(self, num_users, num_items, embedding_dim, latent_dim):
-        super(VASP, self).__init__()
-        self.user_embeddings = nn.Embedding(num_users, embedding_dim)
-        self.item_embeddings = nn.Embedding(num_items, embedding_dim)
-        self.fc1 = nn.Linear(embedding_dim, latent_dim)
-        self.fc2 = nn.Linear(latent_dim, embedding_dim)
-        self.fc3 = nn.Linear(embedding_dim, 1)
-        self.fc4 = nn.Linear(embedding_dim, latent_dim)
-        self.fc5 = nn.Linear(latent_dim, embedding_dim)
-    
-    #VAE의 Encoder 부분
-    def encoder(self, user_indices, item_indices):
-        user_embedding = self.user_embeddings(user_indices)
-        item_embedding = self.item_embeddings(item_indices)
-        x = user_embedding * item_embedding
-        h = F.relu(self.fc1(x))
-        return h
-    
-    #VAE의 Decoder 부분
-    def decoder(self, h):
-        x = F.relu(self.fc2(h))
-        return x
-    
-    #Neural EASE 부분
-    def shallow_path(self, user_indices, item_indices):
-        user_embedding = self.user_embeddings(user_indices)
-        item_embedding = self.item_embeddings(item_indices)
-        x = user_embedding * item_embedding
-        h = F.relu(self.fc4(x))
-        x = F.relu(self.fc5(h))
-        return x
-        
-    #학습
-    def forward(self, user_indices, item_indices):
-        h = self.encoder(user_indices, item_indices)
-        x = self.decoder(h)
-        shallow_x = self.shallow_path(user_indices, item_indices)
-        x = x + shallow_x
-        prediction = self.fc3(x)
-        return prediction
-```
+    class VASP(nn.Module):
+        def __init__(self, num_users, num_items, embedding_dim, latent_dim):
+            super(VASP, self).__init__()
+            self.user_embeddings = nn.Embedding(num_users, embedding_dim)
+            self.item_embeddings = nn.Embedding(num_items, embedding_dim)
+            self.fc1 = nn.Linear(embedding_dim, latent_dim)
+            self.fc2 = nn.Linear(latent_dim, embedding_dim)
+            self.fc3 = nn.Linear(embedding_dim, 1)
+            self.fc4 = nn.Linear(embedding_dim, latent_dim)
+            self.fc5 = nn.Linear(latent_dim, embedding_dim)
 
-VASP의 Loss 값이 감소하는것을 보고 적용이 충분히 가능할 것이라 생각하였지만, 학습에 걸리는 시간이 너무 오래 걸렸고, 딥러닝 모델 서버를 따로 운용을 하지 못하는 상황이기에 당장 적용은 힘들다고 판단하였습니다. 추후, 코드 최적화를 진행하여 Lightsail 자체 운영이 가능하게 되면 적용할 예정입니다.
+        #VAE의 Encoder 부분
+        def encoder(self, user_indices, item_indices):
+            user_embedding = self.user_embeddings(user_indices)
+            item_embedding = self.item_embeddings(item_indices)
+            x = user_embedding * item_embedding
+            h = F.relu(self.fc1(x))
+            return h
+
+        #VAE의 Decoder 부분
+        def decoder(self, h):
+            x = F.relu(self.fc2(h))
+            return x
+
+        #Neural EASE 부분
+        def shallow_path(self, user_indices, item_indices):
+            user_embedding = self.user_embeddings(user_indices)
+            item_embedding = self.item_embeddings(item_indices)
+            x = user_embedding * item_embedding
+            h = F.relu(self.fc4(x))
+            x = F.relu(self.fc5(h))
+            return x
+
+        #학습
+        def forward(self, user_indices, item_indices):
+            h = self.encoder(user_indices, item_indices)
+            x = self.decoder(h)
+            shallow_x = self.shallow_path(user_indices, item_indices)
+            x = x + shallow_x
+            prediction = self.fc3(x)
+            return prediction
+    ```
+
+    VASP의 Loss 값이 감소하는것을 보고 적용이 충분히 가능할 것이라 생각하였지만, 학습에 걸리는 시간이 너무 오래 걸렸고, 딥러닝 모델 서버를 따로 운용을 하지 못하는 상황이기에 당장 적용은 힘들다고 판단하였습니다. 추후, 코드 최적화를 진행하여 Lightsail 자체 운영이 가능하게 되면 적용할 예정입니다.
 
 
 
