@@ -46,7 +46,7 @@ https://www.webtoonbot.com
 이는 추천시스템의 성능을 저하시킬 수 있으므로 최소 10개 이상의 리뷰를 가진 웹툰과 유저들만으로 이루어진 데이터셋을 구성하였습니다. 
 
 ```python
-
+#n개 이상의 데이터 리뷰를 남긴 유저, 웹툰을 필터링 하는 함수
 def preprocessing(data,n):
     min_id = data['user'].value_counts() >=n
     min_id = min_id[min_id].index.to_list()
@@ -59,7 +59,6 @@ def preprocessing(data,n):
     return data
 ```
 
-![최소데이터](https://user-images.githubusercontent.com/17634399/215339688-99b4cc8c-c68f-48c1-b987-31ee7f2f1590.png)
 
 
 ![EDA결과](https://user-images.githubusercontent.com/17634399/215339547-3fcda472-64df-4fbd-b0e7-da2b41351a2f.png)
