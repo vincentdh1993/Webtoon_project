@@ -45,6 +45,20 @@ https://www.webtoonbot.com
 
 이는 추천시스템의 성능을 저하시킬 수 있으므로 최소 10개 이상의 리뷰를 가진 웹툰과 유저들만으로 이루어진 데이터셋을 구성하였습니다. 
 
+```python
+
+def preprocessing(data,n):
+    min_id = data['user'].value_counts() >=n
+    min_id = min_id[min_id].index.to_list()
+    data = data[data['user'].isin(min_id)]
+    
+    min_webtoon = data['title'].value_counts() >= n
+    min_webtoon = min_webtoon[min_webtoon].index.to_list()
+    data = data[data['title'].isin(min_webtoon)]
+    
+    return data
+```
+
 ![최소데이터](https://user-images.githubusercontent.com/17634399/215339688-99b4cc8c-c68f-48c1-b987-31ee7f2f1590.png)
 
 
