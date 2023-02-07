@@ -69,7 +69,7 @@ def preprocessing(data,n):
 
 현재 발표된 SOTA 논문 중에서, 웹툰 프로젝트와의 적합성, 학습시간 등을 고려하여 여러 실험을 진행하였습니다. 실험을 통해 좋은 성능을 보이는 모델들을 선정하여 Hard-Voting방식의 Ensemble을 통해 최대 20개의 웹툰을 추천하는 시스템을 기획하였습니다.
 
-1. Bert4Rec (ACM, 2019) - Transformer 기반의 모델은 user rating을 임베딩하여 추후에 선호할 영화를 예측합니다. NLP 분야에서 좋은 성능을 보이는 Transformer지만, 해당 프로젝트의 크롤링 된 데이터 특성상 sequential dependency를 가지지 못합니다. e.g. 유저가 읽은 순서, 웹툰 회차별 순서 등. 
+##1. Bert4Rec (ACM, 2019) - Transformer 기반의 모델은 user rating을 임베딩하여 추후에 선호할 영화를 예측합니다. NLP 분야에서 좋은 성능을 보이는 Transformer지만, 해당 프로젝트의 크롤링 된 데이터 특성상 sequential dependency를 가지지 못합니다. e.g. 유저가 읽은 순서, 웹툰 회차별 순서 등. 
 
     따라서 Bert4REC 실험을 진행하였을 때, 결과가 좋지 못하였고, 실사용 모델로는 선정하지 않았습니다.
 
@@ -88,7 +88,7 @@ class Bert4Rec(nn.Module):
 ```
 
 
-2. RecVAE (WSDM, 2020)  - Encoder 를 통해 user-item representation을 학습하고, Decoder를 통해 feedback score를 예측합니다. 여기서 추가로 composite priror 를 통해 user의 과거 선호도를 모델링하게 되는데, 위 세가지 모듈을 통해서 user-item interaction의 숨은 의미를 유의미하게 나타냅니다. Implicit feedback에 강점을 낸다고 하지만, Explicit feedback에서도 높은 성능을 보여주었고, full-ranking 계산과 달리 한번 학습을 진행할 때, 전체 유저 데이터를 matrix 형태로 사용하기 때문에 학습 시간이 매우 빨랐습니다. 시간, 성능을 고려하여, 해당 프로젝트의 실사용 모델로 선정하게 되었습니다. 
+##2. RecVAE (WSDM, 2020)  - Encoder 를 통해 user-item representation을 학습하고, Decoder를 통해 feedback score를 예측합니다. 여기서 추가로 composite priror 를 통해 user의 과거 선호도를 모델링하게 되는데, 위 세가지 모듈을 통해서 user-item interaction의 숨은 의미를 유의미하게 나타냅니다. Implicit feedback에 강점을 낸다고 하지만, Explicit feedback에서도 높은 성능을 보여주었고, full-ranking 계산과 달리 한번 학습을 진행할 때, 전체 유저 데이터를 matrix 형태로 사용하기 때문에 학습 시간이 매우 빨랐습니다. 시간, 성능을 고려하여, 해당 프로젝트의 실사용 모델로 선정하게 되었습니다. 
 
 
 ```python
@@ -140,7 +140,7 @@ class RecVAE(nn.Module):
             return x_pred
 ```
 
-3. EASE (RecSys,2019) - Computer Vision과는 달리 CF는 hidden layer를 적게 사용하는 것이 성능이 좋다고 하여 hidden layer를 아예 없애버린 linear한 모델입니다. Graph Embedding 방법을 착안한 모델이며, 구성이 매우 단순하여 딥러닝 모델이라고 보기 어려운 면도 있지만 성능과 학습시간은 매우 뛰어났습니다. 다른 Autoencoder 처럼 latent factor를 통해 추천을 하지는 않지만 input 데이터가 ouput 데이터로 재생성 됩니다. 성능과 학습시간을 고려하여 최종 실사용 모델로 선정하였습니다.
+##3. EASE (RecSys,2019) - Computer Vision과는 달리 CF는 hidden layer를 적게 사용하는 것이 성능이 좋다고 하여 hidden layer를 아예 없애버린 linear한 모델입니다. Graph Embedding 방법을 착안한 모델이며, 구성이 매우 단순하여 딥러닝 모델이라고 보기 어려운 면도 있지만 성능과 학습시간은 매우 뛰어났습니다. 다른 Autoencoder 처럼 latent factor를 통해 추천을 하지는 않지만 input 데이터가 ouput 데이터로 재생성 됩니다. 성능과 학습시간을 고려하여 최종 실사용 모델로 선정하였습니다.
 
 ```python
 class EASE():
@@ -176,9 +176,9 @@ class EASE():
         self.pred = self.X.to_dense() @ B
 ```
 
-4. MultiVae (WWW, 2018) - 
+##4. MultiVae (WWW, 2018) - 
 
-5. VASP (ICAN, 2021) - FLVAE (Colloborative Filtering VAE) + Neural EASE 의 모델로, non-linear와 linear 성향을 모두 모델링 하기 위한 방법입니다. 두개의 모델을 따로 계산 한 뒤에 각각 sigmoid를 씌운 상태로 요소곱을 하여 합치게 되는 모델입니다.
+##5. VASP (ICAN, 2021) - FLVAE (Colloborative Filtering VAE) + Neural EASE 의 모델로, non-linear와 linear 성향을 모두 모델링 하기 위한 방법입니다. 두개의 모델을 따로 계산 한 뒤에 각각 sigmoid를 씌운 상태로 요소곱을 하여 합치게 되는 모델입니다.
 
     https://paperswithcode.com/sota/collaborative-filtering-on-movielens-20m 에 당당히 1위를 기록중인 SOTA 모델로, 해당 웹툰 프로젝트에 적용하기 위해 논문을 읽고 분석해보기로 하였습니다. 저자가 공식적으로 제공한 코드는 Keras로 작성되어 있었고, 인터넷 검색을 해도 참고할 만 한 PyTorch 코드가 없어서 오피셜 Keras 코드와 논문 내용을 기반으로 PyTorch 코드를 아래와 같이 간략하게 작성하였습니다.
 
@@ -233,9 +233,9 @@ class VASP(nn.Module):
         return prediction
 ```
 
-    Loss 값이 감소하는것을 보고 적용이 충분히 가능할 것이라 생각하였지만, 학습에 걸리는 시간이 너무 오래 걸렸고, 딥러닝 모델 서버를 따로 운용을 하지 못하는 상황이기에 당장 적용은 힘들다고 판단하였습니다. 추후, 코드 최적화를 진행하여 Lightsail 자체 운영이 가능하게 되면 적용할 예정입니다.
+VASP의 Loss 값이 감소하는것을 보고 적용이 충분히 가능할 것이라 생각하였지만, 학습에 걸리는 시간이 너무 오래 걸렸고, 딥러닝 모델 서버를 따로 운용을 하지 못하는 상황이기에 당장 적용은 힘들다고 판단하였습니다. 추후, 코드 최적화를 진행하여 Lightsail 자체 운영이 가능하게 되면 적용할 예정입니다.
 
-6. Ensemble - 23년 2월 1일 기준으로 사용하고 있는 모델은 EASE, RecVAE, MultiVAE의 3가지 모델입니다. 각 모델의 결과의 Top-10 결과를 추출하게 되고 다수결의 원칙과 비슷한 개념인 하드 보팅으로 최종 예측값을 반환하게 됩니다. RecVAE 모델과 MultiVAE 모델은 둘 다 Variational Auto Encoder를 사용하며 유사한 결과를 반환하지만 EASE 모델은 때때로 더 독창적인 결과를 반환하기에 결정 prediction score를 활용하는 소프트 보팅보다는 하드보팅이 선택하게 되었습니다.
+##6. Ensemble - 23년 2월 1일 기준으로 사용하고 있는 모델은 EASE, RecVAE, MultiVAE의 3가지 모델입니다. 각 모델의 결과의 Top-10 결과를 추출하게 되고 다수결의 원칙과 비슷한 개념인 하드 보팅으로 최종 예측값을 반환하게 됩니다. RecVAE 모델과 MultiVAE 모델은 둘 다 Variational Auto Encoder를 사용하며 유사한 결과를 반환하지만 EASE 모델은 때때로 더 독창적인 결과를 반환하기에 결정 prediction score를 활용하는 소프트 보팅보다는 하드보팅이 선택하게 되었습니다.
 
 
 # 3. 웹페이지 개발 (Django)
