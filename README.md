@@ -79,19 +79,19 @@ def preprocessing(data,n):
 1. Bert4Rec (ACM, 2019) - Transformer 기반의 모델은 user rating을 임베딩하여 추후에 선호할 영화를 예측합니다. NLP 분야에서 좋은 성능을 보이는 Transformer지만, 해당 프로젝트의 크롤링 된 데이터 특성상 sequential dependency를 가지지 못합니다. e.g. 유저가 읽은 순서, 웹툰 회차별 순서 등. 
 따라서 Bert4REC 실험을 진행하였을 때, HIT@10 또는 NDCG@10의 결과가 좋지 못하였고, 실사용 모델로는 선정하지 않았습니다.
 
-```python
-class Bert4Rec(nn.Module):
-    def __init__(self, num_classes):
-        super(Bert4Rec, self).__init__()
-        self.num_classes = num_classes
-        self.bert = BertModel.from_pretrained('bert-base-uncased')
-        self.fc = nn.Linear(768, num_classes)
+    ```python
+    class Bert4Rec(nn.Module):
+        def __init__(self, num_classes):
+            super(Bert4Rec, self).__init__()
+            self.num_classes = num_classes
+            self.bert = BertModel.from_pretrained('bert-base-uncased')
+            self.fc = nn.Linear(768, num_classes)
 
-    def forward(self, input_ids, attention_mask):
-        _, pooled_output = self.bert(input_ids, attention_mask=attention_mask)
-        logits = self.fc(pooled_output)
-        return logits
-```
+        def forward(self, input_ids, attention_mask):
+            _, pooled_output = self.bert(input_ids, attention_mask=attention_mask)
+            logits = self.fc(pooled_output)
+            return logits
+    ```
 
 
 2. RecVAE (WSDM, 2020)  - Encoder 를 통해 user-item representation을 학습하고, Decoder를 통해 feedback score를 예측합니다. 여기서 추가로 composite priror 를 통해 user의 과거 선호도를 모델링하게 되는데, 위 세가지 모듈을 통해서 user-item interaction의 숨은 의미를 유의미하게 나타냅니다. Implicit feedback에 강점을 낸다고 하지만, Explicit feedback에서도 높은 성능을 보여주었고, full-ranking 계산과 달리 한번 학습을 진행할 때, 전체 유저 데이터를 matrix 형태로 사용하기 때문에 학습 시간이 매우 빨랐습니다. 시간, 성능을 고려하여, 해당 프로젝트의 실사용 모델로 선정하게 되었습니다. 
