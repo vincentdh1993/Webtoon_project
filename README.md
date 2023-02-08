@@ -190,54 +190,116 @@ def preprocessing(data,n):
     import torch
     import torch.nn as nn
     import torch.nn.functional as F
-    import pandas as pd
-    import numpy as np
-    from sklearn.model_selection import train_test_split
+
+
+    class DiagonalToZero(nn.Module):
+        def forward(self, w):
+            """Set diagonal to zero"""
+            q = w.clone()
+            q[torch.eye(q.size(-2), dtype=torch.bool)] = 0
+            return q
+
+    class Sampling(nn.Module):
+        """Uses (z_mean, z_log_var) to sample z, the vector encoding a basket."""
+        def forward(self, inputs):
+            z_mean, z_log_var = inputs
+            batch = z_mean.shape[0]
+            dim = z_mean.shape[1]
+            epsilon = torch.randn(batch, dim)
+            return z_mean + torch.exp(0.5 * z_log_var) * epsilon
+
 
     class VASP(nn.Module):
-        def __init__(self, num_users, num_items, embedding_dim, latent_dim):
+        def __init__(self, num_words, latent=1024, hidden=1024, items_sampling=1.):
             super(VASP, self).__init__()
-            self.user_embeddings = nn.Embedding(num_users, embedding_dim)
-            self.item_embeddings = nn.Embedding(num_items, embedding_dim)
-            self.fc1 = nn.Linear(embedding_dim, latent_dim)
-            self.fc2 = nn.Linear(latent_dim, embedding_dim)
-            self.fc3 = nn.Linear(embedding_dim, 1)
-            self.fc4 = nn.Linear(embedding_dim, latent_dim)
-            self.fc5 = nn.Linear(latent_dim, embedding_dim)
 
-        #VAE의 Encoder 부분
-        def encoder(self, user_indices, item_indices):
-            user_embedding = self.user_embeddings(user_indices)
-            item_embedding = self.item_embeddings(item_indices)
-            x = user_embedding * item_embedding
-            h = F.relu(self.fc1(x))
-            return h
+            self.sampled_items = int(num_words * items_sampling)
 
-        #VAE의 Decoder 부분
-        def decoder(self, h):
-            x = F.relu(self.fc2(h))
-            return x
+            assert self.sampled_items > 0
+            assert self.sampled_items <= num_words
 
-        #Neural EASE 부분
-        def shallow_path(self, user_indices, item_indices):
-            user_embedding = self.user_embeddings(user_indices)
-            item_embedding = self.item_embeddings(item_indices)
-            x = user_embedding * item_embedding
-            h = F.relu(self.fc4(x))
-            x = F.relu(self.fc5(h))
-            return x
+            self.s = self.sampled_items < num_words
 
-        #학습
-        def forward(self, user_indices, item_indices):
-            h = self.encoder(user_indices, item_indices)
-            x = self.decoder(h)
-            shallow_x = self.shallow_path(user_indices, item_indices)
-            x = x + shallow_x
-            prediction = self.fc3(x)
-            return prediction
+            # ************* ENCODER ***********************
+            self.encoder1 = nn.Linear(hidden)
+            self.ln1 = nn.LayerNorm(hidden)
+
+            # ************* SAMPLING **********************
+            self.dense_mean = nn.Linear(latent, name="Mean")
+            self.dense_log_var = nn.Linear(latent, name="log_var")
+
+            self.sampling = Sampling(name='Sampler')
+
+            # ************* DECODER ***********************
+            self.decoder1 = nn.Linear(hidden)
+            self.dln1 = nn.LayerNorm(hidden)
+
+            self.decoder_resnet = nn.Linear(self.sampled_items,
+                                            activation=torch.sigmoid,
+                                            name="DecoderR")
+            self.decoder_latent = nn.Linear(self.sampled_items,
+                                            activation=torch.sigmoid,
+                                            name="DecoderL")
+
+            # ************* PARALLEL SHALLOW PATH *********
+
+            self.ease = nn.Linear(
+                self.sampled_items,
+                activation=torch.sigmoid,
+                bias=False,
+                weight=nn.Parameter(torch.eye(self.sampled_items), requires_grad=False),
+            )
+
+        def forward(self, x, training=False):
+            sampling = self.s
+            if sampling:
+                sampled_x = x[:, :self.sampled_items]
+                non_sampled = x[:, self.sampled_items:] * 0.
+            else:
+                sampled_x = x
+
+            z_mean, z_log_var, z = self.encode(sampled_x)
+            if training:
+                d = self.decode(z)
+                # Add KL divergence regularization loss.
+                kl_loss = 1 + z_log_var - torch.pow(z_mean, 2) - torch.exp(z_log_var)
+                kl_loss = kl_loss.mean()
+                kl_loss *= -0.5
+                return d, kl_loss
+            else:
+                d = self.decode(z_mean)
+
+            if sampling:
+                d = torch.cat([d, non_sampled], dim=-1)
+
+            ease = self.ease(sampled_x)
+
+            if sampling:
+                ease = torch.cat([ease, non_sampled], dim=-1)
+            out = self.decoder_resnet(d) + self.decoder_latent(ease)
+            return out
+
+        def encode(self, x):
+            x = self.encoder1(x)
+            x = self.ln1(x)
+            x = F.relu(x)
+
+            mean = self.dense_mean(x)
+            log_var = self.dense_log_var(x)
+
+            z = self.sampling(mean, log_var)
+
+            return mean, log_var, z
+
+        def decode(self, z):
+            z = self.decoder1(z)
+            z = self.dln1(z)
+            z = F.relu(z)
+
+            return z
     ```
 
-    VASP의 Loss 값이 감소하는것을 보고 적용이 충분히 가능할 것이라 생각하였지만, 학습에 걸리는 시간이 너무 오래 걸렸고, 딥러닝 모델 서버를 따로 운용을 하지 못하는 상황이기에 당장 적용은 힘들다고 판단하였습니다. 추후, 코드 최적화를 진행하여 Lightsail 자체 운영이 가능하게 되면 적용할 예정입니다.
+    학습에 걸리는 시간이 너무 오래 걸렸고, 딥러닝 모델 서버를 따로 운용을 하지 못하는 상황이기에 당장 적용은 힘들다고 판단하였습니다. 추후, 코드 최적화를 진행하여 Lightsail 자체 운영이 가능하게 되면 적용할 예정입니다.
 
 
 
