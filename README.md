@@ -311,7 +311,7 @@ def preprocessing(data,n):
 | Auto Encoder | Multi-VAE | 0.2561 | O |
 | Auto Encoder | RecVAE | 0.2878 | O |
 | Auto Encoder | EASE | 0.3012 | O |
-| Auto Encoder | VASP | 0.2769 | O |
+| Auto Encoder | VASP | 0.2769 | X |
 | MLP | NCF | 0.2440 | X |
 
 ![모델결과](https://user-images.githubusercontent.com/17634399/217301160-637cec0a-d2cd-4254-b9c4-6b7a61faf6c2.png)
