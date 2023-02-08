@@ -314,7 +314,6 @@ def preprocessing(data,n):
 | Auto Encoder | VASP | 0.2769 | X |
 | MLP | NCF | 0.2440 | X |
 
-![모델결과](https://user-images.githubusercontent.com/17634399/217301160-637cec0a-d2cd-4254-b9c4-6b7a61faf6c2.png)
 
 # 3. 웹페이지 개발 (Django)
  - 장고 vs 플라스크를 고민하다가 보안에 강점이 있고 빠른 개발이 가능한 장고를 선택하게 되었습니다.에디터는 PyCharm을 사용하였습니다. 
