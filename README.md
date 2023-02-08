@@ -353,6 +353,7 @@ def preprocessing(data,n):
 | Auto Encoder | EASE | 0.3012 | O |
 | Auto Encoder | VASP | 0.2769 | X |
 | MLP | NCF | 0.2440 | X |
+| MLP | NeuMF | 0.2648 | X |
 
 
 # 3. 웹페이지 개발 (Django)
