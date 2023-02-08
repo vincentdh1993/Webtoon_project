@@ -307,12 +307,12 @@ def preprocessing(data,n):
 
 | 분류 | 모델 | Hit@10 | 활용 여부 |
 |----------|----------|----------|----------|
-| Row 1, Column 1 | Row 1, Column 2 | Row 1, Column 3 | Row 1, Column 4 |
-| Row 2, Column 1 | Row 2, Column 2 | Row 2, Column 3 | Row 2, Column 4 |
-| Row 3, Column 1 | Row 3, Column 2 | Row 3, Column 3 | Row 3, Column 4 |
-| Row 4, Column 1 | Row 4, Column 2 | Row 4, Column 3 | Row 4, Column 4 |
-| Row 5, Column 1 | Row 5, Column 2 | Row 5, Column 3 | Row 5, Column 4 |
-| Row 6, Column 1 | Row 6, Column 2 | Row 6, Column 3 | Row 6, Column 4 |
+| Transformer | BERT4Rec | 0.1146 | X |
+| Auto Encoder | Multi-VAE | 0.2561 | O |
+| Auto Encoder | RecVAE | 0.2878 | O |
+| Auto Encoder | EASE | 0.3012 | O |
+| Auto Encoder | VASP | 0.2769 | O |
+| Auto Encoder | NCF | 0.2440 | X |
 
 ![모델결과](https://user-images.githubusercontent.com/17634399/217301160-637cec0a-d2cd-4254-b9c4-6b7a61faf6c2.png)
 
