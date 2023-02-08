@@ -304,38 +304,38 @@ def preprocessing(data,n):
 
     ```python
     class NCF(nn.Module):
-    def __init__(self, num_users, num_items, num_genres, latent_dim=32):
-        super(NCF, self).__init__()
+        def __init__(self, num_users, num_items, num_genres, latent_dim=32):
+            super(NCF, self).__init__()
 
-        self.num_users = num_users
-        self.num_items = num_items
-        self.num_genres = num_genres
-        self.latent_dim = latent_dim
+            self.num_users = num_users
+            self.num_items = num_items
+            self.num_genres = num_genres
+            self.latent_dim = latent_dim
 
-        # User embedding layer
-        self.user_embedding = nn.Embedding(num_users, latent_dim)
+            # User embedding layer
+            self.user_embedding = nn.Embedding(num_users, latent_dim)
 
-        # Item embedding layer
-        self.item_embedding = nn.Embedding(num_items, latent_dim)
+            # Item embedding layer
+            self.item_embedding = nn.Embedding(num_items, latent_dim)
 
-        # Genre embedding layer
-        self.genre_embedding = nn.Embedding(num_genres, latent_dim)
+            # Genre embedding layer
+            self.genre_embedding = nn.Embedding(num_genres, latent_dim)
 
-        # MLP layers
-        self.fc1 = nn.Linear(3 * latent_dim, latent_dim)
-        self.fc2 = nn.Linear(latent_dim, 1)
+            # MLP layers
+            self.fc1 = nn.Linear(3 * latent_dim, latent_dim)
+            self.fc2 = nn.Linear(latent_dim, 1)
 
-    def forward(self, user_id, item_id, genre_id):
-        user_vector = self.user_embedding(user_id)
-        item_vector = self.item_embedding(item_id)
-        genre_vector = self.genre_embedding(genre_id)
+        def forward(self, user_id, item_id, genre_id):
+            user_vector = self.user_embedding(user_id)
+            item_vector = self.item_embedding(item_id)
+            genre_vector = self.genre_embedding(genre_id)
 
-        concat = torch.cat([user_vector, item_vector, genre_vector], dim=-1)
-        x = F.relu(self.fc1(concat))
-        x = self.fc2(x)
-        x = torch.sigmoid(x)
+            concat = torch.cat([user_vector, item_vector, genre_vector], dim=-1)
+            x = F.relu(self.fc1(concat))
+            x = self.fc2(x)
+            x = torch.sigmoid(x)
 
-        return x
+            return x
     ```
 
 
