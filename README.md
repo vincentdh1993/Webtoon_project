@@ -302,6 +302,42 @@ def preprocessing(data,n):
     학습에 걸리는 시간이 너무 오래 걸렸고, 딥러닝 모델 서버를 따로 운용을 하지 못하는 상황이기에 당장 적용은 힘들다고 판단하였습니다. 추후, 코드 최적화를 진행하여 Lightsail 자체 운영이 가능하게 되면 적용할 예정입니다.
 
 
+    ```python
+    class NCF(nn.Module):
+    def __init__(self, num_users, num_items, num_genres, latent_dim=32):
+        super(NCF, self).__init__()
+
+        self.num_users = num_users
+        self.num_items = num_items
+        self.num_genres = num_genres
+        self.latent_dim = latent_dim
+
+        # User embedding layer
+        self.user_embedding = nn.Embedding(num_users, latent_dim)
+
+        # Item embedding layer
+        self.item_embedding = nn.Embedding(num_items, latent_dim)
+
+        # Genre embedding layer
+        self.genre_embedding = nn.Embedding(num_genres, latent_dim)
+
+        # MLP layers
+        self.fc1 = nn.Linear(3 * latent_dim, latent_dim)
+        self.fc2 = nn.Linear(latent_dim, 1)
+
+    def forward(self, user_id, item_id, genre_id):
+        user_vector = self.user_embedding(user_id)
+        item_vector = self.item_embedding(item_id)
+        genre_vector = self.genre_embedding(genre_id)
+
+        concat = torch.cat([user_vector, item_vector, genre_vector], dim=-1)
+        x = F.relu(self.fc1(concat))
+        x = self.fc2(x)
+        x = torch.sigmoid(x)
+
+        return x
+    ```
+
 
 6. Ensemble - 23년 2월 1일 기준으로 사용하고 있는 모델은 EASE, RecVAE, MultiVAE의 3가지 모델입니다. 각 모델의 결과의 Top-10 결과를 추출하게 되고 다수결의 원칙과 비슷한 개념인 하드 보팅으로 최종 예측값을 반환하게 됩니다. RecVAE 모델과 MultiVAE 모델은 둘 다 Variational Auto Encoder를 사용하며 유사한 결과를 반환하지만 EASE 모델은 때때로 더 독창적인 결과를 반환하기에 결정 prediction score를 활용하는 소프트 보팅보다는 하드보팅이 선택하게 되었습니다.
 
