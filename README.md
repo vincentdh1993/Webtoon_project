@@ -303,103 +303,103 @@ def preprocessing(data,n):
 
 
     ```python
-        class NCF(nn.Module):
-            def __init__(self, num_users, num_items, num_genres, latent_dim=32, num_hidden_layers=3, hidden_dim=64):
-                super(NCF, self).__init__()
+    class NCF(nn.Module):
+        def __init__(self, num_users, num_items, num_genres, latent_dim=32, num_hidden_layers=3, hidden_dim=64):
+            super(NCF, self).__init__()
 
-                self.num_users = num_users
-                self.num_items = num_items
-                self.num_genres = num_genres
-                self.latent_dim = latent_dim
-                self.num_hidden_layers = num_hidden_layers
-                self.hidden_dim = hidden_dim
+            self.num_users = num_users
+            self.num_items = num_items
+            self.num_genres = num_genres
+            self.latent_dim = latent_dim
+            self.num_hidden_layers = num_hidden_layers
+            self.hidden_dim = hidden_dim
 
-                # User embedding layer
-                self.user_embedding = nn.Embedding(num_users, latent_dim)
+            # User embedding layer
+            self.user_embedding = nn.Embedding(num_users, latent_dim)
 
-                # Item embedding layer
-                self.item_embedding = nn.Embedding(num_items, latent_dim)
+            # Item embedding layer
+            self.item_embedding = nn.Embedding(num_items, latent_dim)
 
-                # Genre embedding layer
-                self.genre_embedding = nn.Embedding(num_genres, latent_dim)
+            # Genre embedding layer
+            self.genre_embedding = nn.Embedding(num_genres, latent_dim)
 
-                # MLP layers
-                self.fc1 = nn.Linear(3 * latent_dim, hidden_dim)
-                self.hidden_layers = nn.ModuleList([nn.Linear(hidden_dim, hidden_dim) for _ in range(num_hidden_layers - 1)])
-                self.fc_out = nn.Linear(hidden_dim, 1)
+            # MLP layers
+            self.fc1 = nn.Linear(3 * latent_dim, hidden_dim)
+            self.hidden_layers = nn.ModuleList([nn.Linear(hidden_dim, hidden_dim) for _ in range(num_hidden_layers - 1)])
+            self.fc_out = nn.Linear(hidden_dim, 1)
 
-            def forward(self, user_id, item_id, genre_id):
-                user_vector = self.user_embedding(user_id)
-                item_vector = self.item_embedding(item_id)
-                genre_vector = self.genre_embedding(genre_id)
+        def forward(self, user_id, item_id, genre_id):
+            user_vector = self.user_embedding(user_id)
+            item_vector = self.item_embedding(item_id)
+            genre_vector = self.genre_embedding(genre_id)
 
-                concat = torch.cat([user_vector, item_vector, genre_vector], dim=-1)
-                x = F.relu(self.fc1(concat))
+            concat = torch.cat([user_vector, item_vector, genre_vector], dim=-1)
+            x = F.relu(self.fc1(concat))
 
-                for i in range(self.num_hidden_layers - 1):
-                    x = F.relu(self.hidden_layers[i](x))
+            for i in range(self.num_hidden_layers - 1):
+                x = F.relu(self.hidden_layers[i](x))
 
-                x = self.fc_out(x)
-                x = torch.sigmoid(x)
+            x = self.fc_out(x)
+            x = torch.sigmoid(x)
 
-                return x
+            return x
     ```
     
     ```python
-        class NeuMF(nn.Module):
-            def __init__(self, cfg: Config):
-                super(NeuMF, self).__init__()
-                self.n_users = cfg.n_users
-                self.n_items = cfg.n_items
-                self.emb_dim = cfg.emb_dim
-                self.layer_dim = cfg.layer_dim
-                self.n_continuous_feats = cfg.n_continuous_feats
-                self.n_genres = cfg.n_genres
-                self.dropout = cfg.dropout
+    class NeuMF(nn.Module):
+        def __init__(self, cfg: Config):
+            super(NeuMF, self).__init__()
+            self.n_users = cfg.n_users
+            self.n_items = cfg.n_items
+            self.emb_dim = cfg.emb_dim
+            self.layer_dim = cfg.layer_dim
+            self.n_continuous_feats = cfg.n_continuous_feats
+            self.n_genres = cfg.n_genres
+            self.dropout = cfg.dropout
 
-                self.build_graph()
+            self.build_graph()
 
-            def build_graph(self):
-                self.user_embedding_mf = nn.Embedding(self.n_users, self.emb_dim)
-                self.item_embedding_mf = nn.Embedding(self.n_items, self.emb_dim)
+        def build_graph(self):
+            self.user_embedding_mf = nn.Embedding(self.n_users, self.emb_dim)
+            self.item_embedding_mf = nn.Embedding(self.n_items, self.emb_dim)
 
-                self.user_embedding_mlp = nn.Embedding(self.n_users, self.emb_dim)
-                self.item_embedding_mlp = nn.Embedding(self.n_items, self.emb_dim)
+            self.user_embedding_mlp = nn.Embedding(self.n_users, self.emb_dim)
+            self.item_embedding_mlp = nn.Embedding(self.n_items, self.emb_dim)
 
-                self.genre_embeddig = nn.Embedding(self.n_genres, self.n_genres // 2)
+            self.genre_embeddig = nn.Embedding(self.n_genres, self.n_genres // 2)
 
-                self.mlp_layers = nn.Sequential(
-                    nn.Linear(2 * self.emb_dim + self.n_genres // 2 + self.n_continuous_feats, self.layer_dim),
-                    nn.ReLU(),
-                    nn.Dropout(self.dropout),
-                    nn.Linear(self.layer_dim, self.layer_dim // 2),
-                    nn.ReLU(),
-                    nn.Dropout(self.dropout)
-                )
-                self.affine_output = nn.Linear(self.layer_dim // 2 + self.emb_dim, 1)
-                self.apply(self._init_weights)
+            self.mlp_layers = nn.Sequential(
+                nn.Linear(2 * self.emb_dim + self.n_genres // 2 + self.n_continuous_feats, self.layer_dim),
+                nn.ReLU(),
+                nn.Dropout(self.dropout),
+                nn.Linear(self.layer_dim, self.layer_dim // 2),
+                nn.ReLU(),
+                nn.Dropout(self.dropout)
+            )
+            self.affine_output = nn.Linear(self.layer_dim // 2 + self.emb_dim, 1)
+            self.apply(self._init_weights)
 
-            def _init_weights(self, module):
-                if isinstance(module, nn.Embedding):
-                    nn.init.normal_(module.weight, mean=0.0, std=0.01)
-                elif isinstance(module, nn.Linear):
-                    nn.init.normal_(module.weight, 0, 0.01)
-                    if module.bias is not None:
-                        nn.init.constant_(module.bias, 0.0)
+        def _init_weights(self, module):
+            if isinstance(module, nn.Embedding):
+                nn.init.normal_(module.weight, mean=0.0, std=0.01)
+            elif isinstance(module, nn.Linear):
+                nn.init.normal_(module.weight, 0, 0.01)
+                if module.bias is not None:
+                    nn.init.constant_(module.bias, 0.0)
 
-            def forward(self, user_indices, item_indices, feats):
-                user_embedding_mf = self.user_embedding_mf(user_indices)
-                item_embedding_mf = self.item_embedding_mf(item_indices)
-                mf_output = torch.mul(user_embedding_mf, item_embedding_mf).sum(dim=-1)
-                user_embedding_mlp = self.user_embedding_mlp(user_indices)
-                item_embedding_mlp = self.item_embedding_mlp(item_indices)
-                genre_embedding = self.genre_embeddig(feats[:, -self.n_genres:].long())
-                mlp_input = torch.cat(
-                    (user_embedding_mlp, item_embedding_mlp, genre_embedding, feats[:, :self.n_continuous_feats]), dim=-1)
-                mlp_output = self.mlp_layers(mlp_input)
-                combined_output = torch.cat((mlp_output, mf_output), dim=-1)
-                prediction = self.affine_output(combined_output).squeeze(-1)
-                return prediction
+        def forward(self, user_indices, item_indices, feats):
+            user_embedding_mf = self.user_embedding_mf(user_indices)
+            item_embedding_mf = self.item_embedding_mf(item_indices)
+            mf_output = torch.mul(user_embedding_mf, item_embedding_mf).sum(dim=-1)
+            user_embedding_mlp = self.user_embedding_mlp(user_indices)
+            item_embedding_mlp = self.item_embedding_mlp(item_indices)
+            genre_embedding = self.genre_embeddig(feats[:, -self.n_genres:].long())
+            mlp_input = torch.cat(
+                (user_embedding_mlp, item_embedding_mlp, genre_embedding, feats[:, :self.n_continuous_feats]), dim=-1)
+            mlp_output = self.mlp_layers(mlp_input)
+            combined_output = torch.cat((mlp_output, mf_output), dim=-1)
+            prediction = self.affine_output(combined_output).squeeze(-1)
+            return prediction
     ```
 
 
