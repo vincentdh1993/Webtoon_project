@@ -303,9 +303,9 @@ def preprocessing(data,n):
 
 
     ```python
-    class NCF(nn.Module):
+    class NeuCF(nn.Module):
         def __init__(self, num_users, num_items, num_genres, latent_dim=32, num_hidden_layers=3, hidden_dim=64):
-            super(NCF, self).__init__()
+            super(NeuCF, self).__init__()
 
             self.num_users = num_users
             self.num_items = num_items
@@ -412,7 +412,7 @@ def preprocessing(data,n):
 | Auto Encoder | RecVAE | 0.2878 | O |
 | Auto Encoder | EASE | 0.3012 | O |
 | Auto Encoder | VASP | 0.2769 | X |
-| MLP | NCF | 0.2440 | X |
+| MLP | NeuCF | 0.2440 | X |
 | MLP | NeuMF | 0.2648 | X |
 
 
