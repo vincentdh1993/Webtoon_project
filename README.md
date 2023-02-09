@@ -303,39 +303,46 @@ def preprocessing(data,n):
 
 
     ```python
-    class NCF(nn.Module):
-        def __init__(self, num_users, num_items, num_genres, latent_dim=32):
-            super(NCF, self).__init__()
+        class NCF(nn.Module):
+            def __init__(self, num_users, num_items, num_genres, latent_dim=32, num_hidden_layers=3, hidden_dim=64):
+                super(NCF, self).__init__()
 
-            self.num_users = num_users
-            self.num_items = num_items
-            self.num_genres = num_genres
-            self.latent_dim = latent_dim
+                self.num_users = num_users
+                self.num_items = num_items
+                self.num_genres = num_genres
+                self.latent_dim = latent_dim
+                self.num_hidden_layers = num_hidden_layers
+                self.hidden_dim = hidden_dim
 
-            # User embedding layer
-            self.user_embedding = nn.Embedding(num_users, latent_dim)
+                # User embedding layer
+                self.user_embedding = nn.Embedding(num_users, latent_dim)
 
-            # Item embedding layer
-            self.item_embedding = nn.Embedding(num_items, latent_dim)
+                # Item embedding layer
+                self.item_embedding = nn.Embedding(num_items, latent_dim)
 
-            # Genre embedding layer
-            self.genre_embedding = nn.Embedding(num_genres, latent_dim)
+                # Genre embedding layer
+                self.genre_embedding = nn.Embedding(num_genres, latent_dim)
 
-            # MLP layers
-            self.fc1 = nn.Linear(3 * latent_dim, latent_dim)
-            self.fc2 = nn.Linear(latent_dim, 1)
+                # MLP layers
+                self.fc1 = nn.Linear(3 * latent_dim, hidden_dim)
+                self.hidden_layers = nn.ModuleList([nn.Linear(hidden_dim, hidden_dim) for _ in range(num_hidden_layers - 1)])
+                self.fc_out = nn.Linear(hidden_dim, 1)
 
-        def forward(self, user_id, item_id, genre_id):
-            user_vector = self.user_embedding(user_id)
-            item_vector = self.item_embedding(item_id)
-            genre_vector = self.genre_embedding(genre_id)
+            def forward(self, user_id, item_id, genre_id):
+                user_vector = self.user_embedding(user_id)
+                item_vector = self.item_embedding(item_id)
+                genre_vector = self.genre_embedding(genre_id)
 
-            concat = torch.cat([user_vector, item_vector, genre_vector], dim=-1)
-            x = F.relu(self.fc1(concat))
-            x = self.fc2(x)
-            x = torch.sigmoid(x)
+                concat = torch.cat([user_vector, item_vector, genre_vector], dim=-1)
+                x = F.relu(self.fc1(concat))
 
-            return x
+                for i in range(self.num_hidden_layers - 1):
+                    x = F.relu(self.hidden_layers[i](x))
+
+                x = self.fc_out(x)
+                x = torch.sigmoid(x)
+
+                return x
     ```
     
     ```python
