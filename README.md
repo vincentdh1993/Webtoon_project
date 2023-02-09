@@ -77,20 +77,31 @@ def preprocessing(data,n):
 현재 발표된 SOTA 논문 중에서, 웹툰 프로젝트와의 적합성, 학습시간 등을 고려하여 여러 실험을 진행하였습니다. 실험을 통해 좋은 성능을 보이는 모델들을 선정하여 Hard-Voting방식의 Ensemble을 통해 최대 20개의 웹툰을 추천하는 시스템을 기획하였습니다.
 
 1. Bert4Rec (ACM, 2019) - Transformer 기반의 모델은 user rating을 임베딩하여 추후에 선호할 영화를 예측합니다. NLP 분야에서 좋은 성능을 보이는 Transformer지만, 해당 프로젝트의 크롤링 된 데이터 특성상 sequential dependency를 가지지 못합니다. e.g. 유저가 읽은 순서, 웹툰 회차별 순서 등. 
-따라서 Bert4REC 실험을 진행하였을 때, HIT@10 또는 NDCG@10의 결과가 좋지 못하였고, 실사용 모델로는 선정하지 않았습니다.
+따라서 Bert4REC 실험을 진행하였을 때, HIT@10 또는 NDCG@10의 결과가 좋지 못하였고, 실사용 모델로는 선정하지 않았습니다. 'Transformers' 라이브러리를 사용하면 다음 예시처럼 간단한 BERT4Rec 모델을 만들 수 있습니다.
 
     ```python
-    class Bert4Rec(nn.Module):
-        def __init__(self, num_classes):
-            super(Bert4Rec, self).__init__()
-            self.num_classes = num_classes
-            self.bert = BertModel.from_pretrained('bert-base-uncased')
-            self.fc = nn.Linear(768, num_classes)
+    import torch
+    import torch.nn as nn
+    from transformers import BertModel
 
-        def forward(self, input_ids, attention_mask):
-            _, pooled_output = self.bert(input_ids, attention_mask=attention_mask)
-            logits = self.fc(pooled_output)
-            return logits
+    class BERT4Rec(nn.Module):
+        #num_classes 는 2 (seen,unseen)
+        def __init__(self, num_classes):
+            super(BERT4Rec, self).__init__()
+            self.bert = BertModel.from_pretrained('bert-base-uncased')
+            self.dropout = nn.Dropout(0.2)
+            self.fc = nn.Linear(self.bert.config.hidden_size, num_classes)
+
+        def forward(self, user, item):
+            # input 넣어주기
+            _, pooled_output = self.bert(user, attention_mask=user > 0, output_all_encoded_layers=False)
+            _, pooled_output2 = self.bert(item, attention_mask=item > 0, output_all_encoded_layers=False)
+            # ouput 결과값 concat
+            concat = torch.cat((pooled_output, pooled_output2), 1)
+            # concated ouput dropout layer에 넣어주고 FC layer로 output 뽑아내기
+            concat = self.dropout(concat)
+            output = self.fc(concat)
+            return output
     ```
 
 
