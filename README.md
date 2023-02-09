@@ -182,7 +182,95 @@ def preprocessing(data,n):
             self.pred = self.X.to_dense() @ B
     ```
 
-4. MultiVae (WWW, 2018) - 
+4. MultiVAE (WWW, 2018) -  VAE를 사용하는 추천 모델이지만 decoder 부분에서의 distribution을 다르게 적용한 모델입니다. 기존의 VAE 모델들은 Bernoulli Distribution을 사용하여 binary 결과값인 0 또는 1을 얻었습니다. 하지만 MultiVAE 에서는 Multinomial Distribution을 사용하게 되는데 "k" 개의 결과값을 가질 수 있으며 각각의 확률을 다 더하면 1이 나오게 됩니다. 추천시스템의 관점으로 보았을 때 Bernoulli Distribution은 유저가 한개의 아이템을 클릭(1) 또는 안클릭(0) 하는 확률을 모델링 하지만 Multinomial Distribution을 사용하게 되면 유저가 하나 또는 여러개의 아이템을 클릭할지 안할지의 확률을 모델링 하게 됩니다. 
+
+    ```python
+    import torch
+    import torch.nn as nn
+    import torch.nn.functional as F
+    from torch.utils.data import Dataset, DataLoader
+
+    class MultiVAE(nn.Module):
+        """
+        Container module for Multi-DAE.
+        Multi-DAE : Denoising Autoencoder with Multinomial Likelihood
+        See Variational Autoencoders for Collaborative Filtering
+        https://arxiv.org/abs/1802.05814
+        """
+
+        def __init__(self, p_dims, dropout_rate=0.5):
+            super(MultiVAE, self).__init__()
+            self.p_dims = p_dims
+            self.q_dims = p_dims[::-1]
+
+            temp_q_dims = self.q_dims[:-1] + [self.q_dims[-1] * 2]
+
+            self.q_layers = nn.ModuleList([nn.Linear(d_in, d_out) for
+                                           d_in, d_out in zip(temp_q_dims[:-1], temp_q_dims[1:])])
+
+            self.p_layers = nn.ModuleList([nn.Linear(d_in, d_out) for
+                                           d_in, d_out in zip(self.p_dims[:-1], self.p_dims[1:])])
+
+            self.drop = nn.Dropout(dropout_rate)
+            self.init_weights()
+
+        def forward(self, input):
+            mu, logvar = self.encode(input)
+            z = self.reparameterize(mu, logvar)
+            return self.decode(z), mu, logvar
+
+        def encode(self, input):
+            h = F.normalize(input)
+            h = self.drop(h)
+
+            for i, layer in enumerate(self.q_layers):
+                h = layer(h)
+                if i != len(self.q_layers) - 1:
+                    h = F.tanh(h)
+                else:
+                    mu = h[:, :self.q_dims[-1]]
+                    logvar = h[:, self.q_dims[-1]:]
+            return mu, logvar
+
+        def reparameterize(self, mu, logvar):
+            if self.training:
+                std = torch.exp(0.5 * logvar)
+                eps = torch.randn_like(std)
+                return eps.mul(std).add_(mu)
+            else:
+                return mu
+
+        def decode(self, z):
+            h = z
+            for i, layer in enumerate(self.p_layers):
+                h = layer(h)
+                if i != len(self.p_layers) - 1:
+                    h = F.tanh(h)
+            return h
+
+        def init_weights(self):
+            for layer in self.q_layers:
+                # Xavier Initialization for weights
+                size = layer.weight.size()
+                fan_out = size[0]
+                fan_in = size[1]
+                std = np.sqrt(2.0 / (fan_in + fan_out))
+                layer.weight.data.normal_(0.0, std)
+
+                # Normal Initialization for Biases
+                layer.bias.data.normal_(0.0, 0.001)
+
+            for layer in self.p_layers:
+                # Xavier Initialization for weights
+                size = layer.weight.size()
+                fan_out = size[0]
+                fan_in = size[1]
+                std = np.sqrt(2.0 / (fan_in + fan_out))
+                layer.weight.data.normal_(0.0, std)
+
+                # Normal Initialization for Biases
+                layer.bias.data.normal_(0.0, 0.001)
+    ```
 
 5. VASP (ICAN, 2021) - FLVAE (Colloborative Filtering VAE) + Neural EASE 의 모델로, non-linear와 linear 성향을 모두 모델링 하기 위한 방법입니다. 두개의 모델을 따로 계산 한 뒤에 각각 sigmoid를 씌운 상태로 요소곱을 하여 합치게 되는 모델입니다. https://paperswithcode.com/sota/collaborative-filtering-on-movielens-20m 에 당당히 1위를 기록중인 SOTA 모델로, 해당 웹툰 프로젝트에 적용하기 위해 논문을 읽고 분석해보기로 하였습니다. 저자가 공식적으로 제공한 코드는 Keras로 작성되어 있었고, 인터넷 검색을 해도 참고할 만 한 PyTorch 코드가 없어서 오피셜 Keras 코드와 논문 내용을 기반으로 PyTorch 코드를 아래와 같이 간략하게 작성하였습니다.
 
@@ -301,49 +389,7 @@ def preprocessing(data,n):
 
     학습에 걸리는 시간이 너무 오래 걸렸고, 딥러닝 모델 서버를 따로 운용을 하지 못하는 상황이기에 당장 적용은 힘들다고 판단하였습니다. 추후, 코드 최적화를 진행하여 Lightsail 자체 운영이 가능하게 되면 적용할 예정입니다.
 
-
-    ```python
-    class NeuCF(nn.Module):
-        def __init__(self, num_users, num_items, num_genres, latent_dim=32, num_hidden_layers=3, hidden_dim=64):
-            super(NeuCF, self).__init__()
-
-            self.num_users = num_users
-            self.num_items = num_items
-            self.num_genres = num_genres
-            self.latent_dim = latent_dim
-            self.num_hidden_layers = num_hidden_layers
-            self.hidden_dim = hidden_dim
-
-            # User embedding layer
-            self.user_embedding = nn.Embedding(num_users, latent_dim)
-
-            # Item embedding layer
-            self.item_embedding = nn.Embedding(num_items, latent_dim)
-
-            # Genre embedding layer
-            self.genre_embedding = nn.Embedding(num_genres, latent_dim)
-
-            # MLP layers
-            self.fc1 = nn.Linear(3 * latent_dim, hidden_dim)
-            self.hidden_layers = nn.ModuleList([nn.Linear(hidden_dim, hidden_dim) for _ in range(num_hidden_layers - 1)])
-            self.fc_out = nn.Linear(hidden_dim, 1)
-
-        def forward(self, user_id, item_id, genre_id):
-            user_vector = self.user_embedding(user_id)
-            item_vector = self.item_embedding(item_id)
-            genre_vector = self.genre_embedding(genre_id)
-
-            concat = torch.cat([user_vector, item_vector, genre_vector], dim=-1)
-            x = F.relu(self.fc1(concat))
-
-            for i in range(self.num_hidden_layers - 1):
-                x = F.relu(self.hidden_layers[i](x))
-
-            x = self.fc_out(x)
-            x = torch.sigmoid(x)
-
-            return x
-    ```
+6. Neural CF (WWW, 2017) - 전통적인 추천시스템의 collaborative filtering 방법인 matrix factorization 방법을 개선한 논문입니다. user-item interaction을 학습하기 위해 multi layer perceptron (MLP)를 사용하였으며 저자의 오피셜 Keras 코드와 논문을 참고하여 PyTorch코드로 구현하였습니다. 기존코드에 추가로 추가정보를 활용하기 위해 웹툰의 "genre"를 같이 학습할 수 있도록 구현 하였습니다. 
     
     ```python
     class NeuMF(nn.Module):
@@ -403,7 +449,7 @@ def preprocessing(data,n):
     ```
 
 
-6. Ensemble - 23년 2월 1일 기준으로 사용하고 있는 모델은 EASE, RecVAE, MultiVAE의 3가지 모델입니다. 각 모델의 결과의 Top-10 결과를 추출하게 되고 다수결의 원칙과 비슷한 개념인 하드 보팅으로 최종 예측값을 반환하게 됩니다. RecVAE 모델과 MultiVAE 모델은 둘 다 Variational Auto Encoder를 사용하며 유사한 결과를 반환하지만 EASE 모델은 때때로 더 독창적인 결과를 반환하기에 결정 prediction score를 활용하는 소프트 보팅보다는 하드보팅이 선택하게 되었습니다.
+7. Ensemble - 23년 2월 1일 기준으로 사용하고 있는 모델은 EASE, RecVAE, MultiVAE의 3가지 모델입니다. 각 모델의 결과의 Top-10 결과를 추출하게 되고 다수결의 원칙과 비슷한 개념인 하드 보팅으로 최종 예측값을 반환하게 됩니다. RecVAE 모델과 MultiVAE 모델은 둘 다 Variational Auto Encoder를 사용하며 유사한 결과를 반환하지만 EASE 모델은 때때로 더 독창적인 결과를 반환하기에 결정 prediction score를 활용하는 소프트 보팅보다는 하드보팅이 선택하게 되었습니다.
 
 | 분류 | 모델 | Hit@10 | 활용 여부 |
 |----------|----------|----------|----------|
@@ -412,8 +458,7 @@ def preprocessing(data,n):
 | Auto Encoder | RecVAE | 0.2878 | O |
 | Auto Encoder | EASE | 0.3012 | O |
 | Auto Encoder | VASP | 0.2769 | X |
-| MLP | NeuCF | 0.2440 | X |
-| MLP | NeuMF | 0.2648 | X |
+| MLP | NeuMF | 0.2548 | X |
 
 
 # 3. 웹페이지 개발 (Django)
