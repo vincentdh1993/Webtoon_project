@@ -460,7 +460,7 @@ def preprocessing(data,n):
     ```
 
 
-7. Ensemble - 23년 2월 1일 기준으로 사용하고 있는 모델은 EASE, RecVAE, MultiVAE의 3가지 모델입니다. 각 모델의 결과의 Top-10 결과를 추출하게 되고 다수결의 원칙과 비슷한 개념인 하드 보팅으로 최종 예측값을 반환하게 됩니다. RecVAE 모델과 MultiVAE 모델은 둘 다 Variational Auto Encoder를 사용하며 유사한 결과를 반환하지만 EASE 모델은 때때로 더 독창적인 결과를 반환하기에 결정 prediction score를 활용하는 소프트 보팅보다는 하드보팅이 선택하게 되었습니다.
+7. Ensemble - 23년 2월 1일 기준으로 사용하고 있는 모델은 EASE, RecVAE, MultiVAE의 3가지 모델입니다. 각 모델의 결과의 Top-10 결과를 추출하게 되고 다수결의 원칙과 비슷한 개념인 하드 보팅으로 최종 예측값을 반환하게 됩니다. RecVAE 모델과 MultiVAE 모델은 둘 다 Variational Auto Encoder를 사용하며 유사한 결과를 반환하지만 EASE 모델은 때때로 더 독창적인 결과를 반환하기에 결정 prediction score를 활용하는 소프트 보팅보다는 Simple Top-N 결과를 활용한 하드보팅이 선택하게 되었습니다.
 
     | 분류 | 모델 | Hit@10 | 활용 여부 |
     |----------|----------|----------|----------|
